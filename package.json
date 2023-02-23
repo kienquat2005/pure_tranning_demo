@@ -10,9 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+github.com:kienquat2005/pure_tranning_demo.git"
+    "url": "git+https://github.com/kienquat2005/pure_tranning_demo.git"
   },
-  "author": "Kane Duong",
+  "author": "Purative",
   "license": "ISC",
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
