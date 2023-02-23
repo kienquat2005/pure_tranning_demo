@@ -13,7 +13,7 @@ export default class Game {
     }
 
     start() {
-        const cat = Sprite.from('../assets/images/cat.png');
+        const cat = Sprite.from('assets/images/cat.png');
 
         cat.x = this.app.screen.width / 2;
         cat.y = this.app.screen.height / 2;
