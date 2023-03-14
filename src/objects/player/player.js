@@ -26,6 +26,11 @@ export class Player extends Container{
     this.collider.height = 100;
     this.addChild(this.collider);
     this.collider.on(CollisionEvent.OnCollide, this._onCollide, this);
+    this.collider.enabled = false;
+  }
+
+  onStart() {
+    this.collider.enabled = true;
   }
 
   _onCollide(collider) {

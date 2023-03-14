@@ -4,6 +4,7 @@ import { GameConstant } from "../gameConstant";
 import { InputEvent, InputManager } from "../input/inputManager";
 import { EnemyManager, EnemyManagerEvent } from "../objects/enemies/enemyManager";
 import { Player } from "../objects/player/player";
+import { PlayUI } from "../objects/ui/playUI";
 import { TutorialUI } from "../objects/ui/tutorialUI";
 import { WinUI } from "../objects/ui/winUI";
 
@@ -58,6 +59,9 @@ export class PlayScene extends Container{
   }
 
   _initUI() {
+    this.playUI = new PlayUI();
+    this.addChild(this.playUI);
+
     this.tutorialUI = new TutorialUI();
     this.addChild(this.tutorialUI);
 
@@ -82,6 +86,7 @@ export class PlayScene extends Container{
   }
 
   _onEnemyRemoved() {
+    this.playUI.updateScore(10 - this.enemyManager.enemies.length);
     if (this.enemyManager.enemies.length <= 0) {
       this._onWin();
     }
@@ -91,11 +96,16 @@ export class PlayScene extends Container{
     if (this.state !== GameState.Win) {
       this.enemyManager.update(dt);
     }
+
+    if (this.state === GameState.Playing) {
+      this.playUI.updateTime(dt);
+    }
   }
 
   resize() {
     this.tutorialUI.resize();
     this.winUI.resize();
+    this.playUI.resize();
     if (this.state === GameState.Playing) {
       return;
     }
@@ -106,6 +116,7 @@ export class PlayScene extends Container{
   _onStart() {
     this.state = GameState.Playing;
     this.tutorialUI.hide();
+    this.player.onStart();
   }
 
   _onWin() {

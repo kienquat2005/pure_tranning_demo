@@ -26,15 +26,15 @@ export class TutorialUI extends Container{
   resize() {
     this.fakeBg.width = Game.width;
     this.fakeBg.height = Game.height;
-    this.text.x = Game.width / 2;
-    this.text.y = Game.height / 2;
+    this.tutorialText.x = Game.width / 2;
+    this.tutorialText.y = Game.height / 2;
   }
 
   _initText() {
     let textStyle = new TextStyle({ fontSize: 42, align: "center", fill: 0xffffff});
-    this.text = new Text("TAP TO START", textStyle);
-    this.text.anchor.set(0.5);
-    this.addChild(this.text);
+    this.tutorialText = new Text("DRAG TO MOVE", textStyle);
+    this.tutorialText.anchor.set(0.5);
+    this.addChild(this.tutorialText);
   }
 
   hide() {
