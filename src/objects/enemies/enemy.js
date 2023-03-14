@@ -16,7 +16,9 @@ export class Enemy extends Container{
     this._initSprite();
     this._initCollide();
     this.currTime = 0;
-    this.speed = Util.random(-GameConstant.ENEMY_SPEED, GameConstant.ENEMY_SPEED);
+    this.speed = new Point();
+    this.speed.x = Util.random(-GameConstant.ENEMY_SPEED, GameConstant.ENEMY_SPEED);
+    this.speed.y = Util.random(-GameConstant.ENEMY_SPEED, GameConstant.ENEMY_SPEED);
   }
 
   _initSprite() {
@@ -37,11 +39,21 @@ export class Enemy extends Container{
 
   update(dt) {
     this.currTime += dt;
-    this.x += this.speed * dt;
-    this.y += this.speed * dt;
-    if (this.currTime > GameConstant.ENEMY_INTERVAL) {
-      this.speed = Util.random(-GameConstant.ENEMY_SPEED, GameConstant.ENEMY_SPEED);
-      this.currTime = 0;
+    this.x += this.speed.x * dt;
+    this.y += this.speed.y * dt;
+    this._checkOutOfScreen();
+  }
+
+  _checkOutOfScreen() {
+    let top = 0;
+    let bottom = Game.height;
+    let left = 0;
+    let right = Game.width;
+    if (this.x <= left || this.x >= right) {
+      this.speed.x = -this.speed.x;
+    }
+    if (this.y <= top || this.y >= bottom) {
+      this.speed.y = -this.speed.y;
     }
   }
 

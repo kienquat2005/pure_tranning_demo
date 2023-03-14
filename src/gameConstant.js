@@ -5,5 +5,4 @@ export const GameConstant = Object.freeze({
   ENEMY_SPEED: 2,
   DEBUG_DRAW_COLLIDER: false,
   ENEMY_POOL: 10,
-  ENEMY_INTERVAL: 50,
 })
