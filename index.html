@@ -4,15 +4,11 @@
       background: black;
       overflow: hidden;
     }
-
-    canvas {
+  
+    #game {
       margin: 0;
       padding: 0;
       background: black;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
     }</style><script defer="defer">/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -704,6 +700,920 @@ earcut.flatten = function (data) {
     }
     return result;
 };
+
+
+/***/ }),
+
+/***/ "./src/game.js":
+/*!*********************!*\
+  !*** ./src/game.js ***!
+  \*********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Game": () => (/* binding */ Game)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _gameConstant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./gameConstant */ "./src/gameConstant.js");
+/* harmony import */ var _input_inputManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./input/inputManager */ "./src/input/inputManager.js");
+/* harmony import */ var _physics_physics__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./physics/physics */ "./src/physics/physics.js");
+/* harmony import */ var _scenes_playScene__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scenes/playScene */ "./src/scenes/playScene.js");
+
+
+
+
+
+class Game {
+  static init() {
+    this.app = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Application({
+      width: _gameConstant__WEBPACK_IMPORTED_MODULE_1__.GameConstant.GAME_WIDTH,
+      height: _gameConstant__WEBPACK_IMPORTED_MODULE_1__.GameConstant.GAME_HEIGHT,
+      backgroundColor: 1087931
+    });
+    document.body.appendChild(this.app.view);
+    const viewStyle = this.app.view.style;
+    viewStyle.position = "absolute";
+    viewStyle.display = "block";
+    viewStyle.padding = "0px 0px 0px 0px";
+    this.resize(window.innerWidth, window.innerHeight);
+    this._loadGameAssets((textures) => {
+      this.textures = textures;
+      _input_inputManager__WEBPACK_IMPORTED_MODULE_2__.InputManager.init(this.app.view);
+      _physics_physics__WEBPACK_IMPORTED_MODULE_3__.Physics.init();
+      this._initScene();
+      this.app.ticker.add(this.update, this);
+    });
+  }
+  static resize(width, height) {
+    let style = this.app.view.style;
+    this.windowWidth = width;
+    this.windowHeight = height;
+    let ratio = Math.max(_gameConstant__WEBPACK_IMPORTED_MODULE_1__.GameConstant.GAME_WIDTH / this.windowWidth, _gameConstant__WEBPACK_IMPORTED_MODULE_1__.GameConstant.GAME_HEIGHT / this.windowHeight);
+    this.width = this.windowWidth * ratio;
+    this.height = this.windowHeight * ratio;
+    this.app.view.width = this.width;
+    this.app.view.height = this.height;
+    let scale = this.windowWidth / this.width;
+    style.transformOrigin = "0px 0px";
+    style.transform = `scale(${scale})`;
+    let vMargin = Math.floor((this.windowWidth - this.width * scale) / 2);
+    let hMargin = Math.floor((this.windowHeight - this.height * scale) / 2);
+    style.margin = `${hMargin}px ${vMargin}px ${hMargin}px ${vMargin}px`;
+    this.app.resizeTo = this.app.view;
+    this.app.resize();
+    this.playScene && this.playScene.resize();
+  }
+  static _loadGameAssets(callback) {
+    this.keys = [];
+    this._addTexture("cat", "../assets/images/cat.png");
+    this._addTexture("mouse", "../assets/images/mouse.png");
+    pixi_js__WEBPACK_IMPORTED_MODULE_0__.Assets.load(this.keys).then((textures) => {
+      callback && callback(textures);
+    });
+  }
+  static _addTexture(key, url) {
+    this.keys.push(key);
+    pixi_js__WEBPACK_IMPORTED_MODULE_0__.Assets.add(key, url);
+  }
+  static _initScene() {
+    this.playScene = new _scenes_playScene__WEBPACK_IMPORTED_MODULE_4__.PlayScene();
+    this.app.stage.addChild(this.playScene);
+  }
+  static update(dt) {
+    _physics_physics__WEBPACK_IMPORTED_MODULE_3__.Physics.update(dt);
+    this.playScene.update(dt);
+  }
+}
+window.onload = function() {
+  Game.init();
+};
+window.addEventListener("resize", (event) => {
+  Game.resize(window.innerWidth, window.innerHeight);
+});
+
+
+/***/ }),
+
+/***/ "./src/gameConstant.js":
+/*!*****************************!*\
+  !*** ./src/gameConstant.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "GameConstant": () => (/* binding */ GameConstant)
+/* harmony export */ });
+const GameConstant = Object.freeze({
+  GAME_WIDTH: 720,
+  GAME_HEIGHT: 1280,
+  ENEMY_SPEED: 2,
+  DEBUG_DRAW_COLLIDER: false,
+  ENEMY_POOL: 10,
+  ENEMY_INTERVAL: 50
+});
+
+
+/***/ }),
+
+/***/ "./src/helper/utils.js":
+/*!*****************************!*\
+  !*** ./src/helper/utils.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Util": () => (/* binding */ Util)
+/* harmony export */ });
+class Util {
+  static random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+  static AABBCheck(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+  }
+  static registerOnPointerDown(displayObject, onPointerDown, context) {
+    displayObject.interactive = true;
+    displayObject.on("pointerdown", onPointerDown, context);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/input/inputManager.js":
+/*!***********************************!*\
+  !*** ./src/input/inputManager.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "InputEvent": () => (/* binding */ InputEvent),
+/* harmony export */   "InputManager": () => (/* binding */ InputManager)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+
+class InputManager {
+  /**
+   * @class InputManager
+   * @param {HTMLCanvasElement} canvas 
+   */
+  static init(canvas) {
+    this.canvas = canvas;
+    this.emitter = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.utils.EventEmitter();
+    this.startPosition = { x: 0, y: 0 };
+    this.position = { x: 0, y: 0 };
+    this.isPointerDown = false;
+    this._tmpPos = { x: 0, y: 0 };
+    this._registerDOMEvents();
+  }
+  static _registerDOMEvents() {
+    document.addEventListener("touchstart", (e) => this._handleTouchEvent(e, this._mouseDownEventHandler.bind(this)), { passive: false });
+    document.addEventListener("touchmove", (e) => this._handleTouchEvent(e, this._mouseMoveEventHandler.bind(this)), { passive: false });
+    document.addEventListener("touchend", (e) => this._handleTouchEvent(e, this._mouseUpEventHandler.bind(this)), { passive: false });
+    document.addEventListener("mousedown", (e) => this._mouseDownEventHandler(e));
+    document.addEventListener("mousemove", (e) => this._mouseMoveEventHandler(e));
+    document.addEventListener("mouseup", (e) => this._mouseUpEventHandler(e));
+  }
+  /**
+   * @param {TouchEvent} evt 
+   * @param {(evt: Touch) => void} callback 
+   */
+  static _handleTouchEvent(evt, callback) {
+    evt.preventDefault();
+    callback(evt.touches[0]);
+  }
+  /**
+   * @param {Touch} evt 
+   */
+  static _mouseDownEventHandler(evt) {
+    this._tmpPos = this.getCanvasMousePos(evt);
+    this.startPosition.x = this._tmpPos.x;
+    this.startPosition.y = this._tmpPos.y;
+    this.position.x = this._tmpPos.x;
+    this.position.y = this._tmpPos.y;
+    this.isPointerDown = true;
+    this.emitter.emit(InputEvent.MouseDown, this.position, this.startPosition);
+  }
+  /**
+   * @param {Touch} evt 
+   */
+  static _mouseMoveEventHandler(evt) {
+    this._tmpPos = this.getCanvasMousePos(evt);
+    this.position.x = this._tmpPos.x;
+    this.position.y = this._tmpPos.y;
+    this.emitter.emit(InputEvent.MouseMove, this.position, this.startPosition);
+  }
+  static _mouseUpEventHandler() {
+    this.isMouseDown = false;
+    this.emitter.emit(InputEvent.MouseUp, this.position, this.startPosition);
+  }
+  /**
+   * @param {Touch} evt 
+   */
+  static getCanvasMousePos(evt) {
+    let bound = this.canvas.getBoundingClientRect();
+    this._tmpPos.x = (evt.clientX - bound.left) * this.canvas.width / bound.width;
+    this._tmpPos.y = (evt.clientY - bound.top) * this.canvas.height / bound.height;
+    return this._tmpPos;
+  }
+  /**
+   * @param {string} event 
+   * @param {(mouseX?: number, mouseY?: number, startMouseX?: number)} callback 
+   */
+  static registerEvent(event, callback) {
+    this.emitter.on(event, callback);
+  }
+  /**
+   * @param {string} event 
+   * @param {(mouseX?: number, mouseY?: number, startMouseX?: number)} callback 
+   */
+  static removeEvent(event, callback) {
+    this.emitter.off(event, callback);
+  }
+}
+const InputEvent = Object.freeze({
+  MouseDown: "mousedown",
+  MouseMove: "mousemove",
+  MouseUp: "mouseup"
+});
+
+
+/***/ }),
+
+/***/ "./src/objects/enemies/enemy.js":
+/*!**************************************!*\
+  !*** ./src/objects/enemies/enemy.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Enemy": () => (/* binding */ Enemy),
+/* harmony export */   "EnemyEvent": () => (/* binding */ EnemyEvent)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../game */ "./src/game.js");
+/* harmony import */ var _gameConstant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../gameConstant */ "./src/gameConstant.js");
+/* harmony import */ var _helper_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../helper/utils */ "./src/helper/utils.js");
+/* harmony import */ var _physics_aabb_collider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../physics/aabb/collider */ "./src/physics/aabb/collider.js");
+/* harmony import */ var _physics_aabb_collisionTag__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../physics/aabb/collisionTag */ "./src/physics/aabb/collisionTag.js");
+/* harmony import */ var _physics_aabb_collissionEvent__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../physics/aabb/collissionEvent */ "./src/physics/aabb/collissionEvent.js");
+
+
+
+
+
+
+
+const EnemyEvent = Object.freeze({
+  Collide: "enemy:collide"
+});
+class Enemy extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this._initSprite();
+    this._initCollide();
+    this.currTime = 0;
+    this.speed.x = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(-_gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED, _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED);
+    this.speed.y = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(-_gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED, _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED);
+  }
+  _initSprite() {
+    this.sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(_game__WEBPACK_IMPORTED_MODULE_1__.Game.textures.mouse);
+    this.sprite.anchor.set(0.5);
+    this.addChild(this.sprite);
+  }
+  _initCollide() {
+    this.collider = new _physics_aabb_collider__WEBPACK_IMPORTED_MODULE_4__.Collider(_physics_aabb_collisionTag__WEBPACK_IMPORTED_MODULE_5__.CollisionTag.Enemy);
+    this.addChild(this.collider);
+    this.collider.on(_physics_aabb_collissionEvent__WEBPACK_IMPORTED_MODULE_6__.CollisionEvent.OnCollide, this._onCollide, this);
+  }
+  _onCollide(collider) {
+    this.emit(EnemyEvent.Collide);
+  }
+  update(dt) {
+    this.currTime += dt;
+    this.x += this.speed.x * dt;
+    this.y += this.speed.y * dt;
+    if (this.currTime > _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_INTERVAL) {
+      this.speed = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(-_gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED, _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED);
+      this.currTime = 0;
+    }
+  }
+  _checkOutOfScreen() {
+    let top = 0;
+    let bottom = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height;
+    let left = 0;
+    let right = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width;
+    if (this.x <= left || this.x >= right) {
+      this.speed = -this.speed;
+    }
+    if (this.y <= top || this.y >= bottom) {
+      this.speed = -this.speed;
+    }
+  }
+  destroy() {
+    super.destroy();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/objects/enemies/enemyManager.js":
+/*!*********************************************!*\
+  !*** ./src/objects/enemies/enemyManager.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "EnemyManager": () => (/* binding */ EnemyManager),
+/* harmony export */   "EnemyManagerEvent": () => (/* binding */ EnemyManagerEvent)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../game */ "./src/game.js");
+/* harmony import */ var _gameConstant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../gameConstant */ "./src/gameConstant.js");
+/* harmony import */ var _helper_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../helper/utils */ "./src/helper/utils.js");
+/* harmony import */ var _enemy__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./enemy */ "./src/objects/enemies/enemy.js");
+
+
+
+
+
+const EnemyManagerEvent = Object.freeze({
+  Removed: "enemymanager:remove"
+});
+class EnemyManager extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.enemies = [];
+    this._spawnEnemies();
+    this.enemies.forEach((enemy) => {
+      enemy.on(_enemy__WEBPACK_IMPORTED_MODULE_4__.EnemyEvent.Collide, this.remove.bind(this, enemy));
+    });
+  }
+  _spawnEnemies() {
+    for (let i = 0; i < _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_POOL; i++) {
+      this._spawnEnemy();
+    }
+  }
+  _spawnEnemy() {
+    let enemy = new _enemy__WEBPACK_IMPORTED_MODULE_4__.Enemy();
+    let x = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(0, _game__WEBPACK_IMPORTED_MODULE_1__.Game.width);
+    let y = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(0, _game__WEBPACK_IMPORTED_MODULE_1__.Game.height / 2);
+    enemy.x = x;
+    enemy.y = y;
+    this.enemies.push(enemy);
+    this.addChild(enemy);
+  }
+  remove(enemy) {
+    let index = this.enemies.indexOf(enemy);
+    if (index >= 0) {
+      this.enemies.splice(index, 1);
+      this.removeChild(enemy);
+      this.emit(EnemyManagerEvent.Removed, enemy);
+      enemy.destroy();
+    }
+  }
+  update(dt) {
+    this.enemies.forEach((enemy) => enemy && enemy.update(dt));
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/objects/player/player.js":
+/*!**************************************!*\
+  !*** ./src/objects/player/player.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Player": () => (/* binding */ Player)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../game */ "./src/game.js");
+/* harmony import */ var _gameConstant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../gameConstant */ "./src/gameConstant.js");
+/* harmony import */ var _physics_aabb_collider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../physics/aabb/collider */ "./src/physics/aabb/collider.js");
+/* harmony import */ var _physics_aabb_collisionTag__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../physics/aabb/collisionTag */ "./src/physics/aabb/collisionTag.js");
+/* harmony import */ var _physics_aabb_collissionEvent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../physics/aabb/collissionEvent */ "./src/physics/aabb/collissionEvent.js");
+
+
+
+
+
+
+class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.isMoved = false;
+    this._startInputPos = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point();
+    this._initSprite();
+    this._initCollider();
+  }
+  _initSprite() {
+    this.playerSprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(_game__WEBPACK_IMPORTED_MODULE_1__.Game.textures.cat);
+    this.playerSprite.anchor.set(0.5);
+    this.addChild(this.playerSprite);
+  }
+  _initCollider() {
+    this.collider = new _physics_aabb_collider__WEBPACK_IMPORTED_MODULE_3__.Collider(_physics_aabb_collisionTag__WEBPACK_IMPORTED_MODULE_4__.CollisionTag.Player);
+    this.collider.width = 100;
+    this.collider.height = 100;
+    this.addChild(this.collider);
+    this.collider.on(_physics_aabb_collissionEvent__WEBPACK_IMPORTED_MODULE_5__.CollisionEvent.OnCollide, this._onCollide, this);
+  }
+  _onCollide(collider) {
+  }
+  onPointerDown(pos) {
+    this.isMoved = true;
+    this._startInputPos = pos;
+  }
+  onPointerMove(pos) {
+    if (!this.isMoved) {
+      return;
+    }
+    this.x = pos.x;
+    this.y = pos.y;
+  }
+  onPointerUp() {
+    this.isMoved = false;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/objects/ui/tutorialUI.js":
+/*!**************************************!*\
+  !*** ./src/objects/ui/tutorialUI.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TutorialUI": () => (/* binding */ TutorialUI)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../game */ "./src/game.js");
+/* harmony import */ var _helper_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../helper/utils */ "./src/helper/utils.js");
+
+
+
+class TutorialUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this._initFakeBackground();
+    this._initText();
+    this.resize();
+  }
+  _initFakeBackground() {
+    this.fakeBg = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.WHITE);
+    this.fakeBg.alpha = 0.75;
+    this.fakeBg.tint = 0;
+    this.addChild(this.fakeBg);
+    _helper_utils__WEBPACK_IMPORTED_MODULE_2__.Util.registerOnPointerDown(this.fakeBg, this._onTapBg, this);
+  }
+  _onTapBg() {
+    this.emit("tapped");
+  }
+  resize() {
+    this.fakeBg.width = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width;
+    this.fakeBg.height = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height;
+    this.text.x = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width / 2;
+    this.text.y = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height / 2;
+  }
+  _initText() {
+    let textStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({ fontSize: 42, align: "center", fill: 16777215 });
+    this.text = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("TAP TO START", textStyle);
+    this.text.anchor.set(0.5);
+    this.addChild(this.text);
+  }
+  hide() {
+    this.visible = false;
+  }
+  show() {
+    this.visible = true;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/objects/ui/winUI.js":
+/*!*********************************!*\
+  !*** ./src/objects/ui/winUI.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "WinUI": () => (/* binding */ WinUI)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../game */ "./src/game.js");
+/* harmony import */ var _helper_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../helper/utils */ "./src/helper/utils.js");
+
+
+
+class WinUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this._initFakeBackground();
+    this._initText();
+    this.resize();
+  }
+  _initFakeBackground() {
+    this.fakeBg = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.WHITE);
+    this.fakeBg.alpha = 0.75;
+    this.fakeBg.tint = 0;
+    this.addChild(this.fakeBg);
+    _helper_utils__WEBPACK_IMPORTED_MODULE_2__.Util.registerOnPointerDown(this.fakeBg, this._onTapBg, this);
+  }
+  _onTapBg() {
+    this.emit("tapped");
+  }
+  resize() {
+    this.fakeBg.width = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width;
+    this.fakeBg.height = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height;
+    this.text.x = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width / 2;
+    this.text.y = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height / 2;
+  }
+  _initText() {
+    let textStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({ fontSize: 52, align: "center", fill: 16777215 });
+    this.text = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("YOU WIN", textStyle);
+    this.text.anchor.set(0.5);
+    this.addChild(this.text);
+  }
+  hide() {
+    this.visible = false;
+  }
+  show() {
+    this.visible = true;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/physics/aabb/collider.js":
+/*!**************************************!*\
+  !*** ./src/physics/aabb/collider.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Collider": () => (/* binding */ Collider)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _gameConstant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../gameConstant */ "./src/gameConstant.js");
+/* harmony import */ var _collisionDetector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./collisionDetector */ "./src/physics/aabb/collisionDetector.js");
+/* harmony import */ var _collisionTag__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./collisionTag */ "./src/physics/aabb/collisionTag.js");
+
+
+
+
+class Collider extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite {
+  constructor(tag = _collisionTag__WEBPACK_IMPORTED_MODULE_3__.CollisionTag.Default) {
+    super();
+    this.enabled = true;
+    this.width = 100;
+    this.height = 100;
+    this.anchor.set(0.5);
+    this.visible = false;
+    this.tag = tag;
+    this.collideData = {};
+    _collisionDetector__WEBPACK_IMPORTED_MODULE_2__.CollisionDetector.instance.add(this);
+    if (_gameConstant__WEBPACK_IMPORTED_MODULE_1__.GameConstant.DEBUG_DRAW_COLLIDER) {
+      this.visible = true;
+      this.texture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.WHITE;
+    }
+  }
+  destroy() {
+    super.destroy();
+    this.enabled = false;
+    _collisionDetector__WEBPACK_IMPORTED_MODULE_2__.CollisionDetector.instance.remove(this);
+  }
+  getPosition() {
+    if (this._tmpPos) {
+      this.getGlobalPosition(this._tmpPos, true);
+    } else {
+      this._tmpPos = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point();
+      this.getGlobalPosition(this._tmpPos);
+    }
+    this._tmpPos.x -= this.width * this.anchor.x;
+    this._tmpPos.y -= this.height * this.anchor.y;
+    return this._tmpPos;
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/physics/aabb/collisionDetector.js":
+/*!***********************************************!*\
+  !*** ./src/physics/aabb/collisionDetector.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CollisionDetector": () => (/* binding */ CollisionDetector)
+/* harmony export */ });
+/* harmony import */ var _helper_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../helper/utils */ "./src/helper/utils.js");
+/* harmony import */ var _collisionTag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./collisionTag */ "./src/physics/aabb/collisionTag.js");
+/* harmony import */ var _collissionEvent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./collissionEvent */ "./src/physics/aabb/collissionEvent.js");
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+
+
+
+const _CollisionDetector = class {
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new _CollisionDetector();
+    }
+    return this._instance;
+  }
+  constructor() {
+    this.groups = {};
+  }
+  init(filters) {
+    this.filters = filters;
+    Object.keys(_collisionTag__WEBPACK_IMPORTED_MODULE_1__.CollisionTag).forEach((key) => {
+      var tag = _collisionTag__WEBPACK_IMPORTED_MODULE_1__.CollisionTag[key];
+      this.groups[tag] = [];
+    });
+  }
+  update() {
+    this.filters.forEach((filter) => this._checkFilter(filter));
+  }
+  _checkFilter(filter) {
+    filter.collideTags.forEach((tag) => this._checkTags(filter.tag, tag));
+  }
+  _checkTags(tag1, tag2) {
+    this.groups[tag1].forEach((collider) => {
+      if (collider.enabled) {
+        this._checkCollider(collider, this.groups[tag2]);
+      }
+    });
+  }
+  _checkCollider(collider, group) {
+    for (var i = 0; i < group.length; i++) {
+      var collider2 = group[i];
+      if (collider2.enabled && this._isCollide(collider, collider2)) {
+        collider.emit(_collissionEvent__WEBPACK_IMPORTED_MODULE_2__.CollisionEvent.OnCollide, collider2);
+        collider2.emit(_collissionEvent__WEBPACK_IMPORTED_MODULE_2__.CollisionEvent.OnCollide, collider);
+      }
+      if (!collider.enabled) {
+        return;
+      }
+    }
+  }
+  _isCollide(collider1, collider2) {
+    this._pos1 = collider1.getPosition();
+    this._pos2 = collider2.getPosition();
+    return _helper_utils__WEBPACK_IMPORTED_MODULE_0__.Util.AABBCheck(
+      this._pos1.x,
+      this._pos1.y,
+      collider1.width,
+      collider1.height,
+      this._pos2.x,
+      this._pos2.y,
+      collider2.width,
+      collider2.height
+    );
+  }
+  add(collider) {
+    let tag = collider.tag;
+    this.groups[tag].push(collider);
+  }
+  remove(collider) {
+    let tag = collider.tag;
+    let group = this.groups[tag];
+    let index = group.indexOf(group.indexOf(collider));
+    if (index >= 0) {
+      group.splice(index, 1);
+    }
+  }
+};
+let CollisionDetector = _CollisionDetector;
+/** @type {CollisionDetector} */
+__publicField(CollisionDetector, "_instance");
+
+
+/***/ }),
+
+/***/ "./src/physics/aabb/collisionTag.js":
+/*!******************************************!*\
+  !*** ./src/physics/aabb/collisionTag.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CollisionTag": () => (/* binding */ CollisionTag)
+/* harmony export */ });
+const CollisionTag = Object.freeze({
+  Default: "default",
+  Player: "player",
+  Enemy: "enemy"
+});
+
+
+/***/ }),
+
+/***/ "./src/physics/aabb/collissionEvent.js":
+/*!*********************************************!*\
+  !*** ./src/physics/aabb/collissionEvent.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CollisionEvent": () => (/* binding */ CollisionEvent)
+/* harmony export */ });
+const CollisionEvent = Object.freeze({
+  OnCollide: "collide"
+});
+
+
+/***/ }),
+
+/***/ "./src/physics/physics.js":
+/*!********************************!*\
+  !*** ./src/physics/physics.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Physics": () => (/* binding */ Physics)
+/* harmony export */ });
+/* harmony import */ var _aabb_collisionDetector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./aabb/collisionDetector */ "./src/physics/aabb/collisionDetector.js");
+/* harmony import */ var _aabb_collisionTag__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./aabb/collisionTag */ "./src/physics/aabb/collisionTag.js");
+
+
+class Physics {
+  static init() {
+    _aabb_collisionDetector__WEBPACK_IMPORTED_MODULE_0__.CollisionDetector.instance.init([
+      {
+        tag: _aabb_collisionTag__WEBPACK_IMPORTED_MODULE_1__.CollisionTag.Player,
+        collideTags: [_aabb_collisionTag__WEBPACK_IMPORTED_MODULE_1__.CollisionTag.Enemy]
+      }
+    ]);
+  }
+  static update() {
+    _aabb_collisionDetector__WEBPACK_IMPORTED_MODULE_0__.CollisionDetector.instance.update();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/scenes/playScene.js":
+/*!*********************************!*\
+  !*** ./src/scenes/playScene.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "GameState": () => (/* binding */ GameState),
+/* harmony export */   "PlayScene": () => (/* binding */ PlayScene)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../game */ "./src/game.js");
+/* harmony import */ var _gameConstant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../gameConstant */ "./src/gameConstant.js");
+/* harmony import */ var _input_inputManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../input/inputManager */ "./src/input/inputManager.js");
+/* harmony import */ var _objects_enemies_enemyManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../objects/enemies/enemyManager */ "./src/objects/enemies/enemyManager.js");
+/* harmony import */ var _objects_player_player__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../objects/player/player */ "./src/objects/player/player.js");
+/* harmony import */ var _objects_ui_tutorialUI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../objects/ui/tutorialUI */ "./src/objects/ui/tutorialUI.js");
+/* harmony import */ var _objects_ui_winUI__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../objects/ui/winUI */ "./src/objects/ui/winUI.js");
+
+
+
+
+
+
+
+
+const GameState = Object.freeze({
+  Tutorial: "tutorial",
+  Playing: "playing",
+  Win: "win",
+  Lose: "lose"
+});
+class PlayScene extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.state = GameState.Tutorial;
+    this._initInputHandler();
+    this._initGameplay();
+    this._initUI();
+  }
+  _initInputHandler() {
+    _input_inputManager__WEBPACK_IMPORTED_MODULE_3__.InputManager.emitter.on(_input_inputManager__WEBPACK_IMPORTED_MODULE_3__.InputEvent.MouseDown, this._onPointerDown, this);
+    _input_inputManager__WEBPACK_IMPORTED_MODULE_3__.InputManager.emitter.on(_input_inputManager__WEBPACK_IMPORTED_MODULE_3__.InputEvent.MouseMove, this._onPointerMove, this);
+    _input_inputManager__WEBPACK_IMPORTED_MODULE_3__.InputManager.emitter.on(_input_inputManager__WEBPACK_IMPORTED_MODULE_3__.InputEvent.MouseUp, this._onPointerUp, this);
+  }
+  _onPointerDown(pos) {
+    if (this.state !== GameState.Playing) {
+      return;
+    }
+    this.player.onPointerDown(pos);
+  }
+  _onPointerMove(pos) {
+    if (this.state !== GameState.Playing) {
+      return;
+    }
+    this.player.onPointerMove(pos);
+  }
+  _onPointerUp(pos) {
+    if (this.state !== GameState.Playing) {
+      return;
+    }
+    this.player.onPointerUp(pos);
+  }
+  _initGameplay() {
+    this.gameplay = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.addChild(this.gameplay);
+    this._initPlayer();
+    this._initEnemies();
+  }
+  _initUI() {
+    this.tutorialUI = new _objects_ui_tutorialUI__WEBPACK_IMPORTED_MODULE_6__.TutorialUI();
+    this.addChild(this.tutorialUI);
+    this.winUI = new _objects_ui_winUI__WEBPACK_IMPORTED_MODULE_7__.WinUI();
+    this.addChild(this.winUI);
+    this.winUI.hide();
+    this.tutorialUI.on("tapped", this._onStart, this);
+  }
+  _initPlayer() {
+    this.player = new _objects_player_player__WEBPACK_IMPORTED_MODULE_5__.Player();
+    this.player.x = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width / 2;
+    this.player.y = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height * 0.7;
+    this.gameplay.addChild(this.player);
+  }
+  _initEnemies() {
+    this.enemyManager = new _objects_enemies_enemyManager__WEBPACK_IMPORTED_MODULE_4__.EnemyManager();
+    this.gameplay.addChild(this.enemyManager);
+    this.enemyManager.on(_objects_enemies_enemyManager__WEBPACK_IMPORTED_MODULE_4__.EnemyManagerEvent.Removed, this._onEnemyRemoved, this);
+  }
+  _onEnemyRemoved() {
+    if (this.enemyManager.enemies.length <= 0) {
+      this._onWin();
+    }
+  }
+  update(dt) {
+    if (this.state !== GameState.Win) {
+      this.enemyManager.update(dt);
+    }
+  }
+  resize() {
+    this.tutorialUI.resize();
+    this.winUI.resize();
+    if (this.state === GameState.Playing) {
+      return;
+    }
+    this.player.x = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width / 2;
+    this.player.y = _game__WEBPACK_IMPORTED_MODULE_1__.Game.height * 0.7;
+  }
+  _onStart() {
+    this.state = GameState.Playing;
+    this.tutorialUI.hide();
+  }
+  _onWin() {
+    this.winUI.show();
+    this.state = GameState.Win;
+  }
+}
 
 
 /***/ }),
@@ -33296,46 +34206,11 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-/*!*********************!*\
-  !*** ./src/game.js ***!
-  \*********************/
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Game)
-/* harmony export */ });
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
-
-class Game {
-  constructor() {
-    this.app = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Application({
-      width: 800,
-      height: 600,
-      backgroundColor: 1087931,
-      resolution: window.devicePixelRatio || 1
-    });
-    document.body.appendChild(this.app.view);
-  }
-  start() {
-    const cat = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite.from("assets/images/cat.png");
-    cat.x = this.app.screen.width / 2;
-    cat.y = this.app.screen.height / 2;
-    cat.anchor.set(0.5);
-    this.app.stage.addChild(cat);
-    this.app.ticker.add((delta) => {
-      cat.rotation += 0.1 * delta;
-    });
-  }
-}
-window.onload = function() {
-  const game = new Game();
-  game.start();
-};
-
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/game.js");
+/******/ 	
 /******/ })()
 ;</script></head><body></body></html>
