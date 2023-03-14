@@ -812,8 +812,7 @@ const GameConstant = Object.freeze({
   GAME_HEIGHT: 1280,
   ENEMY_SPEED: 2,
   DEBUG_DRAW_COLLIDER: false,
-  ENEMY_POOL: 10,
-  ENEMY_INTERVAL: 50
+  ENEMY_POOL: 10
 });
 
 
@@ -983,6 +982,7 @@ class Enemy extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this._initSprite();
     this._initCollide();
     this.currTime = 0;
+    this.speed = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point();
     this.speed.x = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(-_gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED, _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED);
     this.speed.y = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(-_gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED, _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED);
   }
@@ -1003,10 +1003,7 @@ class Enemy extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.currTime += dt;
     this.x += this.speed.x * dt;
     this.y += this.speed.y * dt;
-    if (this.currTime > _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_INTERVAL) {
-      this.speed = _helper_utils__WEBPACK_IMPORTED_MODULE_3__.Util.random(-_gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED, _gameConstant__WEBPACK_IMPORTED_MODULE_2__.GameConstant.ENEMY_SPEED);
-      this.currTime = 0;
-    }
+    this._checkOutOfScreen();
   }
   _checkOutOfScreen() {
     let top = 0;
@@ -1014,10 +1011,10 @@ class Enemy extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     let left = 0;
     let right = _game__WEBPACK_IMPORTED_MODULE_1__.Game.width;
     if (this.x <= left || this.x >= right) {
-      this.speed = -this.speed;
+      this.speed.x = -this.speed.x;
     }
     if (this.y <= top || this.y >= bottom) {
-      this.speed = -this.speed;
+      this.speed.y = -this.speed.y;
     }
   }
   destroy() {
