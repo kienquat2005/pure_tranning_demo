@@ -3,6 +3,7 @@ import { GameConstant } from "./gameConstant";
 import { InputManager } from "./input/inputManager";
 import { Physics } from "./physics/physics";
 import { PlayScene } from "./scenes/playScene";
+import { TestScene } from "./scenes/testScene";
 
 export class Game {
     static init() {
@@ -63,13 +64,13 @@ export class Game {
     }
 
     static _initScene() {
-        this.playScene = new PlayScene();
-        this.app.stage.addChild(this.playScene);
+        this.testScene = new TestScene();
+        this.app.stage.addChild(this.testScene);
     }
 
     static update(dt) {
         Physics.update(dt);
-        this.playScene.update(dt);
+        this.testScene.update(dt);
     }
 }
 
