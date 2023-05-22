@@ -10,15 +10,19 @@ export class Game {
         clampy.anchor.set(0.5);
         clampy.x = this.app.screen.width / 2;
         clampy.y = this.app.screen.height / 2;
+        // clampy.width = 80;
+        // clampy.height = 120;
         this.app.stage.addChild(clampy);
-        this.app.ticker.add((dt)=> {
-            clampy.angle += dt *10;
-        })
+        // clampy.rotation = 1;
+        // this.app.ticker.add((dt)=> {
+        //     clampy.angle += dt *10;
+        // })
 
         this.createGraphic();
         this.createContainer();
         this.createText();
         this.createAnimation();
+        this.createCollision();
     }
 
     createContainer(){
@@ -27,11 +31,33 @@ export class Game {
         contry.y = 0;
         this.app.stage.addChild(contry);
 
-        var clampy = Sprite.from("../assets/images/mouse.png");
-        clampy.x = 100;
-        clampy.y = 100;
-        contry.addChild(clampy);
+        this.clampy = Sprite.from("../assets/images/mouse.png");
+        this.clampy.x = 100;
+        this.clampy.y = 100;
+        contry.addChild(this.clampy);
+        this.clampy.interactive = true;
+
+        this.clampy.on("pointertap",() => this.onClicky());
+
+        document.addEventListener("keydown", (e) => {
+            if(e.code === "KeyD"){
+                this.clampy.x += 5;
+            }
+            else if(e.code === "KeyW"){
+                this.clampy.y -= 5;
+            }
+            else if(e.code === "KeyA"){
+                this.clampy.x -=5;
+            }
+            else if(e.code === "KeyS"){
+                this.clampy.y +=5;
+            }
+        })
     }
+    onClicky(e) {
+        this.clampy.scale.set(2)
+    }
+
 
     createGraphic(){
         var graphy = new Graphics();
@@ -77,98 +103,32 @@ export class Game {
         
     }
 
-    createAnimation(){
-        var clampyFrames = [
-            "../assets/images/cat.png",
-            "../assets/images/mouse.png"
+    // createAnimation(){
+    //     var clampyFrames = [
+    //         "../assets/images/cat.png",
+    //         "../assets/images/mouse.png"
 
-          ];
-          var animatedClampy = new AnimatedSprite(clampyFrames.map((stringy) => Texture.from(stringy)));
+    //       ];
+    //       var animatedClampy = new AnimatedSprite(clampyFrames.map((stringy) => Texture.from(stringy)));
        
-          this.app.stage.addChild(animatedClampy);
-          animatedClampy.play()
-        }
-  
+    //       this.app.stage.addChild(animatedClampy);
+    //       animatedClampy.play()
+    // }
+    // createCollision(){
+    //     var rightmostLeft = a.left < b.left ? b.left : a.left;
+    //     var leftmostRight = a.right > b.right ? b.right : a.right;
 
+    //     if (leftmostRight <= rightmostLeft)
+    //     {
+    //         return false;s
+    //     }
+
+    //     var bottommostTop = a.top < b.top ? b.top : a.top;
+    //     var topmostBottom = a.bottom > b.bottom ? b.bottom : a.bottom;
+
+    //     return topmostBottom > bottommostTop;
+    // }
 
 }
 var game = new Game();
 
-
-// Game.init();
-// container
-
-// import { Application, BitmapFont, BitmapText, ParticleContainer, Sprite, TextStyle } from 'pixi.js'
-// import { container } from 'webpack';
-
-// const app = new Application({
-//     resolution: window.devicePixelRatio || 1,
-//     backgroundColor: 0x6495ed,
-//     width: 720,
-//     height: 1280
-// });
-// 
-
-// sprie
-
-// var clampy = Sprite.from("../assets/images/cat.png");
-// clampy.anchor.set(0.5);
-// clampy.x= app.screen.width / 2;
-// clampy.y= app.screen.height / 2;
-// app.stage.addChild(clampy)
-
-
-// Graphics
-// var graphy = new Graphics();
-// graphy.beginFill(0xFF00FF);
-// graphy.lineStyle(10, 0x00FF00);
-// graphy.drawCircle(0, 0, 25);
-
-// graphy.endFill();
-// app.stage.addChild(graphy);
-
-// graphy.x = 100;
-// graphy.y = 100;
-
-// Text
-// var style = new TextStyle({
-//     align: "center",
-//     fill: "#754c24",
-//     fontSize: 42
-// });
-// const texty: Text = new Text("Hello World", style);
-// texty.text = "This is expensive to change, please do not abuse";
-
-// app.stage.addChild(texty);
-
-//BitmapText
-
-// BitmapFont.from("comic 32", {
-//     fill: "#ffffff",
-//     fontFamily: "Comic Sans MS",
-//     fontSize: 32
-// })
-// var bitmapTexty = new BitmapText(" I love baking, my family, and my friends",{
-//     fontName: "comic 32",
-//     fontSize: 32,
-//     tint: 0xFF0000
-// })
-// bitmapTexty.text = "This is cheap";
-// bitmapTexty.text = "Change is as much as you want";
-// app.stage.addChild(bitmapTexty);
-
-// Filter
-// import { BlurFilter } from 'pixi.js';
-// var myBlurfilter = new BlurFilter();
-// clampy.filters = [myBlurfilter];
-
-// Particles
-
-// import * as particleSettings from "../emitter.json";
-// var prticleContainer = new ParticleContainer();
-// app.stage.addChild(particleSettings);
-
-
-// window.onload = function () {
-//     Game.init();
-// }
