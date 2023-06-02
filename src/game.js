@@ -1,4 +1,4 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import { Application } from "pixi.js";
 
 export class Game {
     static init() {
