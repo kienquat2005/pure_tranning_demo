@@ -1,126 +1,103 @@
-import { Container } from "pixi.js";
-import { Game } from "../game";
-import { GameConstant } from "../gameConstant";
-import { InputEvent, InputManager } from "../input/inputManager";
-import { EnemyManager, EnemyManagerEvent } from "../objects/enemies/enemyManager";
+import { Container, Graphics } from "pixi.js";
+import { CollisionDetector } from "../collisionDetector/collisionDetector";
+import { BackGround } from "../objects/background/background";
+import { Door } from "../objects/door/door";
+import { Enemy } from "../objects/enemies/enemy";
+import { EnemyManager } from "../objects/enemies/enemyManager";
 import { Player } from "../objects/player/player";
-import { PlayUI } from "../objects/ui/playUI";
-import { TutorialUI } from "../objects/ui/tutorialUI";
-import { WinUI } from "../objects/ui/winUI";
+import { Treasure } from "../objects/treasure/treasure";
+import { YouLose } from "./youLost";
+import { YouWin } from "./youWin";
 
-export const GameState = Object.freeze({
-  Tutorial: "tutorial",
-  Playing: "playing",
-  Win: "win",
-  Lose: "lose"
-})
-
-export class PlayScene extends Container{
-  constructor() {
+export class PlayScene extends Container {
+  constructor(){
     super();
-    this.state = GameState.Tutorial;
-    this._initInputHandler();
-    this._initGameplay();
-    this._initUI();
+    this.createBackGround();
+    this.createTreasure();
+    this.createDoor();
+    this.createPlayer();
+    this.createHealth();
+    this.initEnemyManager();
+    this.createYouwin();
+    this.createYoulose();
   }
 
-  _initInputHandler() {
-    InputManager.emitter.on(InputEvent.MouseDown, this._onPointerDown, this);
-    InputManager.emitter.on(InputEvent.MouseMove, this._onPointerMove, this);
-    InputManager.emitter.on(InputEvent.MouseUp, this._onPointerUp, this);
+  createBackGround(){
+    this.background = new BackGround();
+    this.addChild(this.background);
   }
 
-  _onPointerDown(pos) {
-    if (this.state !== GameState.Playing) {
-      return;
-    }
-    this.player.onPointerDown(pos);
+  createTreasure(){
+    this.treasure = new Treasure();
+    this.addChild(this.treasure);
+    this.treasure.x = 512-65;
+    this.treasure.y = 512/2;
   }
 
-  _onPointerMove(pos) {
-    if (this.state !== GameState.Playing) {
-      return;
-    }
-    this.player.onPointerMove(pos);
+  createDoor(){
+    this.door = new Door();
+    this.addChild(this.door);
+  }
+  createPlayer(){
+    this.player = new Player()
+    this.addChild(this.player);
+    this.player.x = 50;
+    this.player.y = 512/2;
   }
 
-  _onPointerUp(pos) {
-    if (this.state !== GameState.Playing) {
-      return;
-    }
-    this.player.onPointerUp(pos);
+  createHealth(){
+    this.health = new Graphics()
+    this.health.beginFill(0xd10000);
+    this.health.drawRect(0, 0, 180, 10);
+    this.health.x = 300;
+    this.health.y = 20;
+    this.addChild(this.health);
   }
 
-  _initGameplay() {
-    this.gameplay = new Container();
-    this.addChild(this.gameplay);
-    this._initPlayer();
-    this._initEnemies();
-  }
-
-  _initUI() {
-    this.playUI = new PlayUI();
-    this.addChild(this.playUI);
-
-    this.tutorialUI = new TutorialUI();
-    this.addChild(this.tutorialUI);
-
-    this.winUI = new WinUI();
-    this.addChild(this.winUI);
-    this.winUI.hide();
-
-    this.tutorialUI.on("tapped", this._onStart, this);
-  }
-
-  _initPlayer() {
-    this.player = new Player();
-    this.player.x = Game.width / 2;
-    this.player.y = Game.height * 0.7;
-    this.gameplay.addChild(this.player);
-  }
-
-  _initEnemies() {
+  initEnemyManager(){
     this.enemyManager = new EnemyManager();
-    this.gameplay.addChild(this.enemyManager);
-    this.enemyManager.on(EnemyManagerEvent.Removed, this._onEnemyRemoved, this);
+    this.addChild(this.enemyManager);
+    this.enemies = this.enemyManager.enemies;
+  }
+  createYouwin(){
+    this.youwin = new YouWin();
+  }
+  createYoulose(){
+    this.youlose = new YouLose();
   }
 
-  _onEnemyRemoved() {
-    this.playUI.updateScore(10 - this.enemyManager.enemies.length);
-    if (this.enemyManager.enemies.length <= 0) {
-      this._onWin();
+  update(dt){
+    this.enemyManager.update();
+    if(CollisionDetector.detectCollision(this.player,this.treasure)){
+      this.onPlayerCollideWithTreasure();
     }
-  }
 
-  update(dt) {
-    if (this.state !== GameState.Win) {
-      this.enemyManager.update(dt);
+    if(CollisionDetector.detectCollision(this.treasure,this.door)){
+      this.addChild(this.youwin)
     }
 
-    if (this.state === GameState.Playing) {
-      this.playUI.updateTime(dt);
+    // for(let i = 0; i < this.enemies.length; i ++){
+    //   if(CollisionDetector.detectCollision(this.player, this.enemies[i])){
+    //     console.log("cham")
+    //   }
+    // }
+
+    this.enemies.forEach((enemy) => {
+      if(CollisionDetector.detectCollision(this.player, enemy)){
+        this.onPlayerColliderWithEnemy();
+      }
+    })
+  }
+
+  onPlayerCollideWithTreasure(){
+    this.treasure.x = this.player.x + 3;
+    this.treasure.y = this.player.y + 3;
+  }
+
+  onPlayerColliderWithEnemy(){
+    this.health.width -= 1;
+    if(this.health.width <= 0){
+      this.addChild(this.youlose);
     }
-  }
-
-  resize() {
-    this.tutorialUI.resize();
-    this.winUI.resize();
-    this.playUI.resize();
-    if (this.state === GameState.Playing) {
-      return;
-    }
-    this.player.x = Game.width / 2;
-    this.player.y = Game.height * 0.7;
-  }
-
-  _onStart() {
-    this.state = GameState.Playing;
-    this.tutorialUI.hide();
-    this.player.onStart();
-  }
-
-  _onWin() {
-    this.winUI.show();
-    this.state = GameState.Win;
   }
 }
