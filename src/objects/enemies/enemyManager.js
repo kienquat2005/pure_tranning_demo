@@ -1,50 +1,46 @@
 import { Container } from "pixi.js";
-import { Game } from "../../game";
 import { GameConstant } from "../../gameConstant";
-import { Util } from "../../helper/utils";
-import { Enemy, EnemyEvent } from "./enemy";
-
-export const EnemyManagerEvent = Object.freeze({
-  Removed: "enemymanager:remove",
-})
+import { Enemy } from "./enemy";
 
 export class EnemyManager extends Container{
-  constructor() {
+  constructor(){
     super();
     this.enemies = [];
-    this._spawnEnemies();
-    this.enemies.forEach(enemy => {
-      enemy.on(EnemyEvent.Collide, this.remove.bind(this, enemy));
-    });
+    this.initEnemies();
   }
 
-  _spawnEnemies() {
-    for (let i = 0; i < GameConstant.ENEMY_POOL; i++){
-      this._spawnEnemy();
+  initEnemies(){
+    for(let i = 0; i < 6; i++){
+      let enemy = new Enemy();
+      this.addChild(enemy);
+      this.enemies.push(enemy);
+    }
+
+    for(let i = 0; i < this.enemies.length; i++){
+      let x = this.getRandom();
+      let y = this.getRandom();
+      this.enemies[i].x = x;
+      this.enemies[i].y = y
     }
   }
 
-  _spawnEnemy() {
-    let enemy = new Enemy();
-    let x = Util.random(0, Game.width);
-    let y = Util.random(0, Game.height / 2);
-    enemy.x = x;
-    enemy.y = y;
-    this.enemies.push(enemy);
-    this.addChild(enemy);
+  getRandom(){
+    let randomNumber = Math.floor(Math.random() * 350) + 100;
+    return randomNumber;
   }
 
-  remove(enemy) {
-    let index = this.enemies.indexOf(enemy);
-    if (index >= 0) {
-      this.enemies.splice(index, 1);
-      this.removeChild(enemy);
-      this.emit(EnemyManagerEvent.Removed, enemy);
-      enemy.destroy();
+  move(){
+    for(let i = 0; i < this.enemies.length; i++){
+      this.enemies[i].y += this.enemies[i].velocity;
+      if(this.enemies[i].y >= GameConstant.GAME_HEIGHT || this.enemies[i].y <= 0 ){
+        this.enemies[i].velocity *= -1;
+      }
+      
     }
   }
 
-  update(dt) {
-    this.enemies.forEach(enemy => enemy && enemy.update(dt));
+  update(){
+    this.move();
   }
+
 }

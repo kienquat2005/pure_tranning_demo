@@ -1,56 +1,34 @@
-import { Container, Point, Sprite, Texture } from "pixi.js";
-import { Game } from "../../game";
-import { GameConstant } from "../../gameConstant";
-import { Collider } from "../../physics/aabb/collider";
-import { CollisionTag } from "../../physics/aabb/collisionTag";
-import { CollisionEvent } from "../../physics/aabb/collissionEvent";
+import { Container, Graphics, Sprite, Texture } from "pixi.js";
 
 export class Player extends Container{
-  constructor() {
+  constructor(){
     super();
-    this.isMoved = false;
-    this._startInputPos = new Point();
-    this._initSprite();
-    this._initCollider();
+    this.totalHealth = 100;
+    this.speed = 10
+    this.createSpire();
+    this.direction();
+
+  }
+  createSpire(){
+    this.spire = new Sprite(Texture.from("../../../assets/images/explorer.png"));
+    this.addChild(this.spire);
   }
 
-  _initSprite() {
-    this.playerSprite = new Sprite(Game.textures["cat"]);
-    this.playerSprite.anchor.set(0.5);
-    this.addChild(this.playerSprite);
+  direction(){
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "a"){
+        this.x -= this.speed;
+      }
+      else if(e.key === "d"){
+        this.x += this.speed;
+      }
+      else if(e.key === "w"){
+        this.y -= this.speed;
+      }
+      else if(e.key === "s"){
+        this.y += this.speed;
+      }
+    })
   }
 
-  _initCollider() {
-    this.collider = new Collider(CollisionTag.Player);
-    this.collider.width = 100;
-    this.collider.height = 100;
-    this.addChild(this.collider);
-    this.collider.on(CollisionEvent.OnCollide, this._onCollide, this);
-    this.collider.enabled = false;
-  }
-
-  onStart() {
-    this.collider.enabled = true;
-  }
-
-  _onCollide(collider) {
-    // console.log("collider with: ", collider);
-  }
-
-  onPointerDown(pos) {
-    this.isMoved = true;
-    this._startInputPos = pos;
-  }
-
-  onPointerMove(pos) {
-    if (!this.isMoved) {
-      return;
-    }
-    this.x = pos.x;
-    this.y = pos.y;
-  }
-
-  onPointerUp() {
-    this.isMoved = false;
-  }
 }
