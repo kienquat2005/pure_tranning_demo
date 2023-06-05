@@ -4,7 +4,7 @@ export class Player extends Container{
   constructor(){
     super();
     this.totalHealth = 100;
-    this.speed = 10
+    this.speed = 15;
     this.createSpire();
     this.direction();
 

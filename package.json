@@ -24,8 +24,10 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@pixi/sound": "^5.2.0",
     "clean-webpack-plugin": "^4.0.0",
     "esbuild-loader": "^2.20.0",
+    "howler": "^2.2.3",
     "pixi.js": "^7.0.4"
   }
 }

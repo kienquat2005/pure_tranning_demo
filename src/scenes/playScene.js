@@ -1,3 +1,5 @@
+import { Sound } from "@pixi/sound";
+import { Howl } from "howler";
 import { Container, Graphics } from "pixi.js";
 import { CollisionDetector } from "../collisionDetector/collisionDetector";
 import { BackGround } from "../objects/background/background";
@@ -20,6 +22,7 @@ export class PlayScene extends Container {
     this.initEnemyManager();
     this.createYouwin();
     this.createYoulose();
+    this.testSound();
   }
 
   createBackGround(){
@@ -59,9 +62,11 @@ export class PlayScene extends Container {
     this.addChild(this.enemyManager);
     this.enemies = this.enemyManager.enemies;
   }
+
   createYouwin(){
     this.youwin = new YouWin();
   }
+
   createYoulose(){
     this.youlose = new YouLose();
   }
@@ -95,9 +100,22 @@ export class PlayScene extends Container {
   }
 
   onPlayerColliderWithEnemy(){
-    this.health.width -= 1;
+    this.health.width -= 2;
     if(this.health.width <= 0){
       this.addChild(this.youlose);
     }
+  }
+
+  testSound(){
+    let sound = new Howl({
+      src: ['../../assets/sound/futuristic-logo-3-versions-149429.mp3'],
+      autoplay: true,
+      loop: false,
+      volume: 0.8,
+
+    });
+    
+    sound.play();
+    
   }
 }

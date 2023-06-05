@@ -9,8 +9,22 @@ export class EnemyManager extends Container{
     this.initEnemies();
   }
 
+  // initEnemies(){
+  //   for(let i = 0; i < 6; i++){
+  //     let enemy = new Enemy();
+  //     this.addChild(enemy);
+  //     this.enemies.push(enemy);
+  //   }
+
+  //   for(let i = 0; i < this.enemies.length; i++){
+  //     let x = this.getRandom();
+  //     let y = this.getRandom();
+  //     this.enemies[i].x = x;
+  //     this.enemies[i].y = y
+  //   }
+  // }
   initEnemies(){
-    for(let i = 0; i < 6; i++){
+    for(let i= 0 ; i<6 ; i++){
       let enemy = new Enemy();
       this.addChild(enemy);
       this.enemies.push(enemy);
@@ -20,7 +34,7 @@ export class EnemyManager extends Container{
       let x = this.getRandom();
       let y = this.getRandom();
       this.enemies[i].x = x;
-      this.enemies[i].y = y
+      this.enemies[i].y = y;
     }
   }
 
