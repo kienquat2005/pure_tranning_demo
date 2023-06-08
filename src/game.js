@@ -1,11 +1,12 @@
 import { Application } from "pixi.js";
+import { GameConstant } from "./gameConstant";
 import { PlayScene } from "./scenes/playScene";
 
 export class Game {
     static init() {
         this.app = new Application({
-            width : 512,
-            height : 512,
+            width : GameConstant.GAME_WIDTH,
+            height : GameConstant.GAME_HEIGHT,
         });
         document.body.appendChild(this.app.view);
 

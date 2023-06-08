@@ -3,11 +3,12 @@ import { Container, Sprite, Texture } from "pixi.js";
 export class Door extends Container{
     constructor(){
         super();
-        this.createSpire();
+        this.createSpireDoor();
     }
-    createSpire(){
-        this.spire = new Sprite(Texture.from("../../../assets/images/door.png"));
-        this.addChild(this.spire);
-        this.spire.x = 28;
+    createSpireDoor(){
+        this.door = new Sprite(Texture.from("/assets/images/door.png"));
+        this.addChild(this.door);
+        this.door.x = 30;
+        this.door.y = 0;
     }
 }

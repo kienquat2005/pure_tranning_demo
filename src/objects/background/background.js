@@ -1,13 +1,11 @@
 import { Container, Sprite, Texture } from "pixi.js";
-
-export class BackGround extends Container {
+export class Background extends Container{
     constructor(){
         super();
-        this.createSprite();
+        this.createSpire();
     }
-
-    createSprite(){
-        this.sprite = new Sprite(Texture.from("/assets/images/dungeon.png"));
-        this.addChild(this.sprite);
+    createSpire(){
+        this.spire = new Sprite(Texture.from("/assets/images/dungeon.png"))
+        this.addChild(this.spire);
     }
 }
