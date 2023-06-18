@@ -1,14 +1,18 @@
-export class CollisionDetector {
-    static detectCollision(object1, object2) {
-        // Lấy thông tin về vị trí và kích thước của hai vật thể
-        const bounds1 = object1.getBounds();
-        const bounds2 = object2.getBounds();
-      
-        // Kiểm tra xem hai hình chữ nhật đại diện cho hai vật thể có chồng lên nhau hay không
-        return bounds1.x + bounds1.width > bounds2.x &&
-               bounds1.x < bounds2.x + bounds2.width &&
-               bounds1.y + bounds1.height > bounds2.y &&
-               bounds1.y < bounds2.y + bounds2.height;
-      }
-      
+import { Container } from "pixi.js";
+
+export class CollisionDetector extends Container{
+   static detectCollision(obj1, obj2,){
+    const object1Bounds = obj1.getBounds();
+    const object2Bounds = obj2.getBounds();
+    if (
+      object1Bounds.x + object1Bounds.width > object2Bounds.x &&
+      object1Bounds.x < object2Bounds.x + object2Bounds.width &&
+      object1Bounds.y + object1Bounds.height > object2Bounds.y &&
+      object1Bounds.y < object2Bounds.y + object2Bounds.height
+    ) {
+      return true;
+    }
+  
+    return false;
+  }
 }

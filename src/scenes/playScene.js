@@ -1,121 +1,124 @@
-import { Sound } from "@pixi/sound";
-import { Howl } from "howler";
-import { Container, Graphics } from "pixi.js";
+import { Container } from "pixi.js";
+import { Backgroud } from "../Backgroud/Backgroud";
+import { Base } from "../Base/Base";
+import { Bird } from "../Bird/Bird";
 import { CollisionDetector } from "../collisionDetector/collisionDetector";
-import { BackGround } from "../objects/background/background";
-import { Door } from "../objects/door/door";
-import { Enemy } from "../objects/enemies/enemy";
-import { EnemyManager } from "../objects/enemies/enemyManager";
-import { Player } from "../objects/player/player";
-import { Treasure } from "../objects/treasure/treasure";
-import { YouLose } from "./youLost";
-import { YouWin } from "./youWin";
+import { GameConstant } from "../gameConstant";
+import { Pipe } from "../pipes/pipe";
+
+import { Youlose } from "../youLose/youLose";
 
 export class PlayScene extends Container {
   constructor(){
     super();
-    this.createBackGround();
-    this.createTreasure();
-    this.createDoor();
-    this.createPlayer();
-    this.createHealth();
-    this.initEnemyManager();
-    this.createYouwin();
+    this.createBackgroud();
+    this.createBird();
+    this.createPipe();
+    this.createBase();
     this.createYoulose();
-    this.testSound();
+
+    
   }
 
-  createBackGround(){
-    this.background = new BackGround();
-    this.addChild(this.background);
+  createBackgroud(){
+    this.backgroud = new Backgroud();
+    this.addChild(this.backgroud);
   }
 
-  createTreasure(){
-    this.treasure = new Treasure();
-    this.addChild(this.treasure);
-    this.treasure.x = 512-65;
-    this.treasure.y = 512/2;
+  createPipe(){
+    this.pipe = new Pipe();
+    this.addChild(this.pipe);
+    this.pipe.x = 300
+    this.pipe.x = GameConstant.GAME_WIDTH;
+    
   }
 
-  createDoor(){
-    this.door = new Door();
-    this.addChild(this.door);
-  }
-  createPlayer(){
-    this.player = new Player()
-    this.addChild(this.player);
-    this.player.x = 50;
-    this.player.y = 512/2;
+  createBird(){
+    this.bird = new Bird();
+    this.addChild(this.bird);
+    this.bird.x = 100;
+    this.bird.y = 100;
+
   }
 
-  createHealth(){
-    this.health = new Graphics()
-    this.health.beginFill(0xd10000);
-    this.health.drawRect(0, 0, 180, 10);
-    this.health.x = 300;
-    this.health.y = 20;
-    this.addChild(this.health);
+  createBase(){
+    this.base = new Base();
+    this.addChild(this.base);
+    this.bases = this.base.bases
   }
-
-  initEnemyManager(){
-    this.enemyManager = new EnemyManager();
-    this.addChild(this.enemyManager);
-    this.enemies = this.enemyManager.enemies;
-  }
-
-  createYouwin(){
-    this.youwin = new YouWin();
-  }
+ 
 
   createYoulose(){
-    this.youlose = new YouLose();
+    this.lose = new Youlose();
   }
 
-  update(dt){
-    this.enemyManager.update();
-    if(CollisionDetector.detectCollision(this.player,this.treasure)){
-      this.onPlayerCollideWithTreasure();
+
+  update(){
+    this.bird.y += this.bird.velocity; 
+    this.pipe.x -= this.pipe.velocity;
+    this.pipeCollilewithwall();
+    this.baseCollilewithWall();
+
+    if(this.bird.y >= 379){
+      this.bird.speedFlap = 0;
     }
 
-    if(CollisionDetector.detectCollision(this.treasure,this.door)){
-      this.addChild(this.youwin)
+   if(CollisionDetector.detectCollision(this.bird, this.base)){
+    this.onBirdCollidebase();
+   }
+
+    if(CollisionDetector.detectCollision(this.bird, this.pipe.pipeDOw)){
+      this.onBirdCollidePipedow();
     }
+    if(CollisionDetector.detectCollision(this.bird, this.pipe.pipeUp)){
+      this.onBirdCollidePipeup();
+    }
+    
+  }
 
-    // for(let i = 0; i < this.enemies.length; i ++){
-    //   if(CollisionDetector.detectCollision(this.player, this.enemies[i])){
-    //     console.log("cham")
-    //   }
-    // }
 
-    this.enemies.forEach((enemy) => {
-      if(CollisionDetector.detectCollision(this.player, enemy)){
-        this.onPlayerColliderWithEnemy();
+  pipeCollilewithwall(){
+      if(this.pipe.x <= -50 ){
+        this.pipe.x = 300;
+        this.pipe.y = this.getRamdom();
+        console.log(this.getRamdom())
+      }
+  }
+  baseCollilewithWall(){
+    this.bases.forEach((base) => {
+      base.x -= this.base.velocity;
+      if(base.x <= -288){
+        base.x = 300
       }
     })
-  }
-
-  onPlayerCollideWithTreasure(){
-    this.treasure.x = this.player.x + 3;
-    this.treasure.y = this.player.y + 3;
-  }
-
-  onPlayerColliderWithEnemy(){
-    this.health.width -= 2;
-    if(this.health.width <= 0){
-      this.addChild(this.youlose);
+    
     }
+  onBirdCollidebase(){
+     this.bird.velocity = 0;
+     this.base.velocity = 0;
+     this.pipe.velocity = 0;
+     this.addChild(this.lose);
+     document.addEventListener("keydown", (e) => {
+      if(e.key === "w"){
+        location.reload();
+      }
+     })
   }
 
-  testSound(){
-    let sound = new Howl({
-      src: ['../../assets/sound/futuristic-logo-3-versions-149429.mp3'],
-      autoplay: true,
-      loop: false,
-      volume: 0.8,
-
-    });
-    
-    sound.play();
-    
+  onBirdCollidePipeup(){
+    this.pipe.velocity = 0;
+    this.base.velocity = 0; 
+    this.addChild(this.lose);
   }
+  onBirdCollidePipedow(){
+    this.pipe.velocity = 0;
+    this.base.velocity = 0;
+    this.addChild(this.lose);
+  }
+  getRamdom(){
+    let random = Math.floor(Math.random() * 151) - 150 ;
+      return random;
+  }
+  
+
 }

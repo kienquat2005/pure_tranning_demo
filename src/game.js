@@ -4,7 +4,7 @@ import { PlayScene } from "./scenes/playScene";
 export class Game {
     static init() {
         this.app = new Application({
-            width : 512,
+            width : 288,
             height : 512,
         });
         document.body.appendChild(this.app.view);
