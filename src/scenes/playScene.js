@@ -1,22 +1,29 @@
-import { Container } from "pixi.js";
+import { Container, copySearchParams } from "pixi.js";
 import { Backgroud } from "../Backgroud/Backgroud";
 import { Base } from "../Base/Base";
 import { Bird } from "../Bird/Bird";
 import { CollisionDetector } from "../collisionDetector/collisionDetector";
 import { GameConstant } from "../gameConstant";
 import { Pipe } from "../pipes/pipe";
-
+import { Score } from "../score/score";
 import { Youlose } from "../youLose/youLose";
+
+export const gameState = Object.freeze({
+  Playing : "playing",
+  GameOver : "gameOver",
+  UpdateScore : "updateScore",
+})
 
 export class PlayScene extends Container {
   constructor(){
     super();
+    this.state = null;
     this.createBackgroud();
     this.createBird();
     this.createPipe();
     this.createBase();
     this.createYoulose();
-
+    this.createScore();
     
   }
 
@@ -46,10 +53,20 @@ export class PlayScene extends Container {
     this.addChild(this.base);
     this.bases = this.base.bases
   }
- 
+  createScore(){
+    this.score = new Score();
+    this.addChild(this.score);
+  }
+
+  updateScore(){
+    this.score.score +=1;
+    this.score.scoreText.text = "Score "+this.score.score;
+  }
 
   createYoulose(){
     this.lose = new Youlose();
+    this.addChild(this.lose);
+    this.lose.visible = false;
   }
 
 
@@ -64,16 +81,37 @@ export class PlayScene extends Container {
     }
 
    if(CollisionDetector.detectCollision(this.bird, this.base)){
+    
     this.onBirdCollidebase();
    }
 
     if(CollisionDetector.detectCollision(this.bird, this.pipe.pipeDOw)){
+      if(this.state === gameState.GameOver){
+        return;
+      }
+      this.state = gameState.GameOver;
+      console.log(this.state)
+
       this.onBirdCollidePipedow();
     }
     if(CollisionDetector.detectCollision(this.bird, this.pipe.pipeUp)){
+      if(this.state === gameState.GameOver){
+        return;
+      }
+      this.state = gameState.GameOver;
       this.onBirdCollidePipeup();
     }
-    
+
+    if(this.pipe.x <= this.bird.x){
+      if(this.state === gameState.UpdateScore){
+        return;
+      }
+      this.state = gameState.UpdateScore;
+      this.updateScore(); 
+
+    }else{
+      this.state = gameState.Playing;
+    }
   }
 
 
@@ -81,7 +119,6 @@ export class PlayScene extends Container {
       if(this.pipe.x <= -50 ){
         this.pipe.x = 300;
         this.pipe.y = this.getRamdom();
-        console.log(this.getRamdom())
       }
   }
   baseCollilewithWall(){
@@ -91,13 +128,13 @@ export class PlayScene extends Container {
         base.x = 300
       }
     })
-    
     }
+    
   onBirdCollidebase(){
      this.bird.velocity = 0;
      this.base.velocity = 0;
      this.pipe.velocity = 0;
-     this.addChild(this.lose);
+     this.lose.visible = true;
      document.addEventListener("keydown", (e) => {
       if(e.key === "w"){
         location.reload();
@@ -108,12 +145,10 @@ export class PlayScene extends Container {
   onBirdCollidePipeup(){
     this.pipe.velocity = 0;
     this.base.velocity = 0; 
-    this.addChild(this.lose);
   }
   onBirdCollidePipedow(){
     this.pipe.velocity = 0;
     this.base.velocity = 0;
-    this.addChild(this.lose);
   }
   getRamdom(){
     let random = Math.floor(Math.random() * 151) - 150 ;

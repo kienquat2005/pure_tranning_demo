@@ -6,7 +6,7 @@ export class Bird extends Container{
         this.createBird();
         this.direction();
         this.velocity = 3;
-        this.speedFlap = 60;
+        this.speedFlap = 50;
     }
     createBird(){
         this.bird = new Sprite(Texture.from("/assets/images/bluebird-downflap.png"))
