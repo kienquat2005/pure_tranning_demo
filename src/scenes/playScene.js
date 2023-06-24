@@ -99,6 +99,9 @@ export class PlayScene extends Container {
     if(this.pipe.x <= -60 ){
       this.pipe.x = 300;
     }
+    if(this.pipe.x <= -50){
+      this.pipe.y = this.getRamdom();
+    }
     this._baseAnimation();
     this.birdFalling();
     

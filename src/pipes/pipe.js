@@ -3,7 +3,7 @@ import { Container, Sprite, Texture } from "pixi.js";
 export class Pipe extends Container {
     constructor(){
         super();
-        this.velocity = 3;
+        this.velocity = 2;
         this._createPipeUp();
         this._createPipeDown();
     }
