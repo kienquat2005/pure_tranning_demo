@@ -3,21 +3,22 @@ import { Container, Sprite, Texture } from "pixi.js";
 export class Pipe extends Container {
     constructor(){
         super();
-        this.velocity = 1;
-        this.createPipeUp();
-        this.createPipeDow();
-        this.score = 0;
+        this.velocity = 3;
+        this._createPipeUp();
+        this._createPipeDown();
     }
-    createPipeUp(){
+
+    _createPipeUp(){
         this.pipeUp = new Sprite(Texture.from("/assets/images/pipe-up.png"));
-        this.addChild(this.pipeUp)
-        this.pipeUp.x = 0;
+        this.addChild(this.pipeUp);
         this.pipeUp.y = -150;
     }
-    createPipeDow(){
-        this.pipeDOw = new Sprite(Texture.from("/assets/images/pipe-down.png"));
-        this.addChild(this.pipeDOw)
-        this.pipeDOw.x = 0 ; 
-        this.pipeDOw.y = 300 ;
+
+    _createPipeDown(){
+        this.pipeDown = new Sprite(Texture.from("/assets/images/pipe-down.png"));
+        this.addChild(this.pipeDown);
+        this.pipeDown.y = 300
     }
+    
+      
 }
