@@ -1,14 +1,22 @@
 import { Application } from "pixi.js";
+import { GameConstant } from "./gameconstant";
+import { PlayScene } from "./scenes/playScene";
 
 export class Game {
     static init() {
         this.app = new Application({
-            width: 720,
-            height: 1280,
-            backgroundColor: 0x1099bb,
+            width : GameConstant.GAME_WIDTH,
+            height : GameConstant.GAME_HEIGHT,
         });
         document.body.appendChild(this.app.view);
+
+        this.playScene = new PlayScene();
+        this.app.stage.addChild(this.playScene);
+
+        this.app.ticker.add((dt) => this.playScene.update(dt))
     }
+
+
 }
 
 window.onload = function () {
