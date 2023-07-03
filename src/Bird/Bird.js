@@ -1,23 +1,51 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { AnimatedSprite, Container, Sprite, Texture } from "pixi.js";
 
 export class Bird extends Container{
-    constructor(){
+    constructor(x, y ){
         super();
-        this.createBird();
+        this.x = x;
+        this.y = y;
+        this.speedFlap = -8 ;
+        this.gravity = 0.25;
+        this.velocity = 1;
+        this.isFalling = false;
+        this.vMax = -10;
+        this.tmpAngle = 20;
+
+        this.Textures = [
+            Texture.from("/assets/images/bluebird-upflap.png"),
+            Texture.from("/assets/images/bluebird-midflap.png"),
+            Texture.from("/assets/images/bluebird-downflap.png")
+        ]; 
+        this.createBirdAnimation();
         this.direction();
-        this.velocity = 3;
-        this.speedFlap = 60;
     }
-    createBird(){
-        this.bird = new Sprite(Texture.from("/assets/images/bluebird-downflap.png"))
-        this.addChild(this.bird);
-}
+    createBirdAnimation(){
+        this.birdAnimation = new AnimatedSprite(this.Textures)
+        this.birdAnimation.animationSpeed = 0.15;
+        this.birdAnimation.loop = true;
+        this.addChild(this.birdAnimation);
+        this.birdAnimation.play();
+    }
 
     direction(){
-        document.addEventListener("keydown",() => this.flap())
+        document.addEventListener("keydown",() => {
+            this.isFalling = true;
+            this.flap();
+        })
     }
 
     flap(){
-        this.y -= this.speedFlap; 
+        if(this.velocity + this.speedFlap > this.vMax){
+            this.velocity += this.speedFlap;
+            this.y -= this.velocity;
+            this.rotate(this.velocity - this.tmpAngle, this.x);
+        }
     }
+
+    rotate(y, x){
+        let angle = Math.atan2(y, x);
+        this.rotation = angle;
+    }
+
 }

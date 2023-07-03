@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Container, PI_2 } from "pixi.js";
 import { Backgroud } from "../Backgroud/Backgroud";
 import { Base } from "../Base/Base";
 import { Bird } from "../Bird/Bird";
@@ -61,7 +61,34 @@ export class PlayScene extends Container {
   }
 
   birdFalling(){
-    this.bird.y += this.bird.velocity;
+    if(this.bird.isFalling){
+      if(this.bird.velocity > 0){
+        this.bird.rotate(this.bird.velocity + this.bird.tmpAngle, this.bird.x);
+      }
+      this.bird.velocity += this.bird.gravity;
+      this.bird.y += this.bird.velocity;
+    }
+  } 
+  // birdRotation(){
+  //   console.log(this.bird.velocity.y);
+  //  this.angle = Math.atan2(this.bird.y , this.bird.x)
+  //  this.angle = this.angle * 180 / Math.PI;
+
+  //  this.bird.rotation = this.angle;
+  // }
+  
+
+  movePipe(){
+    if(this.bird.isFalling){
+      this.pipe.x -= this.pipe.velocity;
+      if(this.pipe.x <= -60 ){
+        this.pipe.x = 300;
+      }
+      if(this.pipe.x <= -50){
+        this.pipe.y = this.getRamdom();
+      }
+    }
+    
   }
 
   _baseAnimation(){
@@ -74,9 +101,10 @@ export class PlayScene extends Container {
   }
 
   onCollideWithBase(){
-    this.bird.velocity = 0;
+    this.bird.velocity = 0;  
     this.pipe.velocity = 0;
     this.base.velocity = 0;
+    this.bird.gravity = 0 
     this.gameLose.visible = true;
   }
 
@@ -85,9 +113,12 @@ export class PlayScene extends Container {
     this.bird.speedFlap = 0;
     this.pipe.velocity = 0;
     this.base.velocity = 0;
+    this.gameLose.visible = true;
+    if(CollisionDetector.detectCollision(this.bird, this.base)){
+      this.bird.velocity = 0;
+      this.bird.gravity = 0;
+    }
   }
-
-
 
   getRamdom(){
     let random = Math.floor(Math.random() * 151) - 150 ;
@@ -95,18 +126,9 @@ export class PlayScene extends Container {
   }
 
   update(){
-    this.pipe.x -= this.pipe.velocity;
-    if(this.pipe.x <= -60 ){
-      this.pipe.x = 300;
-    }
-    if(this.pipe.x <= -50){
-      this.pipe.y = this.getRamdom();
-    }
     this._baseAnimation();
-    this.birdFalling();
-    
-    
-
+    this.movePipe(); 
+    // this.birdRotation();
     if(CollisionDetector.detectCollision(this.bird, this.pipe.pipeDown) 
       || CollisionDetector.detectCollision(this.bird, this.pipe.pipeUp)){
           if(this.state === gameState.GameOver){
@@ -115,6 +137,10 @@ export class PlayScene extends Container {
           this.state = gameState.GameOver;
           this.onCollideWithPipe();
     }
+    if(this.isfalling === true ){
+      return;
+    }
+    this.birdFalling();
 
     if(CollisionDetector.detectCollision(this.bird, this.base)){
       this.onCollideWithBase();
