@@ -26,8 +26,8 @@ export class Player extends Container{
         this.playerAnimation.anchor.set(0.5);
         this.addChild(this.playerAnimation);
         this.playerAnimation.play();
-        this.playerAnimation.scale.x = 0.3;
-        this.playerAnimation.scale.y = 0.3;
+        this.playerAnimation.scale.x = 0.5;
+        this.playerAnimation.scale.y = 0.5;
     }
 
     move(dt){
