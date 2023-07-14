@@ -4,6 +4,7 @@ import { GameConstant } from "../../gameConstant";
 import { Collider } from "../../physics/aabb/collider";
 import { CollisionTag } from "../../physics/aabb/collisionTag";
 import { CollisionEvent } from "../../physics/aabb/collissionEvent";
+import { BubbleEffect } from "../effect/bubbleEffect";
 
 export class Player extends Container{
   constructor() {
@@ -12,12 +13,21 @@ export class Player extends Container{
     this._startInputPos = new Point();
     this._initSprite();
     this._initCollider();
+    this._initEffect();
   }
 
   _initSprite() {
     this.playerSprite = new Sprite(Game.textures["cat"]);
     this.playerSprite.anchor.set(0.5);
     this.addChild(this.playerSprite);
+  }
+
+  _initEffect() {
+   
+  }
+
+  update(dt) {
+    // this.effect.update(dt);
   }
 
   _initCollider() {

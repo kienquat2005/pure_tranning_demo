@@ -7,6 +7,7 @@ import { Player } from "../objects/player/player";
 import { PlayUI } from "../objects/ui/playUI";
 import { TutorialUI } from "../objects/ui/tutorialUI";
 import { WinUI } from "../objects/ui/winUI";
+import { BubbleEffect } from "../objects/effect/bubbleEffect";
 
 export const GameState = Object.freeze({
   Tutorial: "tutorial",
@@ -70,6 +71,13 @@ export class PlayScene extends Container{
     this.winUI.hide();
 
     this.tutorialUI.on("tapped", this._onStart, this);
+
+    this._initEffect();
+  }
+
+  _initEffect() {
+    this.fx = new BubbleEffect();
+    this.gameplay.addChild(this.fx);
   }
 
   _initPlayer() {
@@ -100,6 +108,9 @@ export class PlayScene extends Container{
     if (this.state === GameState.Playing) {
       this.playUI.updateTime(dt);
     }
+    this.player.update(dt);
+    this.fx.update(dt);
+    this.fx.emitter.updateSpawnPos(this.player.x, this.player.y);
   }
 
   resize() {
