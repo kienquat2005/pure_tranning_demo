@@ -52,6 +52,7 @@ export class Game {
         this.keys = [];
         this._addTexture("cat", "assets/images/cat.png");
         this._addTexture("mouse", "assets/images/mouse.png");
+        this._addTexture("bubbles", "assets/images/Bubbles99px.png");
         Assets.load(this.keys).then((textures) => {
             callback && callback(textures);
         });
