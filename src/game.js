@@ -2,6 +2,7 @@ import { Application } from "pixi.js";
 import { GameConstant } from "./gameconstant";
 import { PlayScene } from "./scenes/playScene";
 import TWEEN from "@tweenjs/tween.js";
+import { LevelData } from "./level/levelData";
 
 export class Game {
     static init() {
@@ -11,6 +12,7 @@ export class Game {
         });
         document.body.appendChild(this.app.view);
         this.currentTime = 0;
+        LevelData.init();
         this.playScene = new PlayScene();
         this.app.stage.addChild(this.playScene);
         this.resize(window.innerWidth, window.innerHeight);

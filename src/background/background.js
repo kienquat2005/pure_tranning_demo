@@ -1,4 +1,4 @@
-import { Container, Graphics } from "pixi.js";
+import { Container, Graphics,Text } from "pixi.js";
 import { Game } from "../game";
 import { GameConstant } from "../gameconstant";
 
@@ -8,15 +8,16 @@ export class Background extends Container{
         this.createBackground();
         this.createabaseup();
         this.createabasedow();
-        
     }
+
     createBackground(){
         this.background = new Graphics();
-        this.background.beginFill(0xffffff);
+        this.background.beginFill(0xd1c9c9);
         this.background.drawRect(0, 0,GameConstant.GAME_WIDTH, GameConstant.GAME_HEIGHT );
         this.background.endFill();
         this.addChild(this.background);
     }
+
     createabaseup(){
         this.baseup = new Graphics();
         this.baseup.beginFill(0x8f8e88);
@@ -24,6 +25,7 @@ export class Background extends Container{
         this.baseup.endFill();
         this.addChild(this.baseup);
     }
+    
     createabasedow(){
         this.basedow = new Graphics();
         this.basedow.beginFill(0x8f8e88);

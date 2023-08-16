@@ -8,8 +8,15 @@ export const GameConstant = Object.freeze({
     
     PLAYER_VELOCITY_X: 6,
     PLAYER_VELOCITY_Y: 1,
-    PLAYER_SPEEDTAB: 6 ,
-    PLAYER_GRAVITY: 0.05 ,
-    PLAYER_VMAX: 7,
+    PLAYER_JUMP_FORCE: -20 ,
+    PLAYER_GRAVITY: 0.3,
+    PLAYER_VY_MAX: -10,
+    PLAYER_VX_MAX: 12,
+    PLAYER_ROTAE: 0.5,
+
+    SCORE_STEP: 1,
+    TOTALSPIKE: 9,
+    WIDTHRECT_POINT: 450,
+    HEIGHTRECT_POINT: 150,
 
   });
