@@ -8,7 +8,6 @@ export class Youloss extends Container{
         this.basePoint();
         this.showCup();
         this.showRank();
-        this.showPoint();
         this.baseReplay();
 
     }
@@ -47,7 +46,7 @@ export class Youloss extends Container{
         this.addChild(this.basePoints);
     }
 
-    showPoint(){
+    showPoint(score){
         this.textPoint = new Text("Point", {
             fontSize: 50,
             fill:"white",
@@ -57,6 +56,15 @@ export class Youloss extends Container{
         this.textPoint.x = 360;
         this.textPoint.y = 580;
         this.addChild(this.textPoint);
+
+        this.resultPoint = new Text(score, {
+            fontSize: 50,
+            fill:"white",
+        });
+        this.resultPoint.anchor.set(0.5,0.5)
+        this.resultPoint.x = 360;
+        this.resultPoint.y = 500;
+        this.addChild(this.resultPoint);
     }
 
     showCup(){

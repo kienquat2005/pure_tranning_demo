@@ -14,6 +14,7 @@ import { ScoreCandy } from "../score/socrecandy";
 export class PlayScene extends Container{
     constructor(){
         super();
+        this.resultScore = 0;
         this.initBackground();
         this.initScore();
         this.initPlayer();
@@ -29,6 +30,7 @@ export class PlayScene extends Container{
         this.player.y = GameConstant.GAME_HEIGHT/2;
         this.player.on(PlayerEvent.LOSE, ()=> {
             this.loss.visible = true;
+            this.loss.showPoint(this.resultScore);
         });
     }
 
@@ -60,8 +62,8 @@ export class PlayScene extends Container{
 
     initScoreCandy(){
         this.scorecandy = new ScoreCandy();
-        // this.scorecandy.x = this.candy.x
         this.addChild(this.scorecandy);
+        // this.scorecandy.play(this.candy)
         // this.scorecandy.visible = false;
 
     }
@@ -78,6 +80,7 @@ export class PlayScene extends Container{
         }
         this.score.score += GameConstant.SCORE_STEP;
         this.score.scoreText.text = this.score.score;
+        this.resultScore = this.score.score;
         LevelData.nextLevell(this.score.score);
     }
 
@@ -176,6 +179,7 @@ export class PlayScene extends Container{
 
         if(CollisionDetector.detectCollision(this.player,this.candy)){
             this.candy.isleft = !this.candy.isleft;
+            this.scorecandy.play(this.candy)
             if(this.candy.isleft){
                 this.candy.x = 600;
                 this.candy.y = this.candy.randomCandy();
@@ -183,6 +187,7 @@ export class PlayScene extends Container{
             else {
                 this.candy.x = 100;
                 this.candy.y = this.candy.randomCandy();
+                
             }
         }
     }
