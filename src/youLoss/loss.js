@@ -53,7 +53,7 @@ export class Youloss extends Container{
 
         })
         this.textPoint.anchor.set(0.5,0.5)
-        this.textPoint.x = 360;
+        this.textPoint.x = 370;
         this.textPoint.y = 580;
         this.addChild(this.textPoint);
 
@@ -62,8 +62,8 @@ export class Youloss extends Container{
             fill:"white",
         });
         this.resultPoint.anchor.set(0.5,0.5)
-        this.resultPoint.x = 360;
-        this.resultPoint.y = 500;
+        this.resultPoint.x = 370;
+        this.resultPoint.y = 510;
         this.addChild(this.resultPoint);
     }
 
