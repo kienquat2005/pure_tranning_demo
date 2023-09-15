@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Texture } from "pixi.js";
+import { Color, Container, Graphics, Sprite, Texture } from "pixi.js";
 import { GameConstant } from "../gameconstant";
 import { Gamelost } from "./gamelost";
 import { Score } from "./score";
@@ -41,45 +41,58 @@ export class Board extends Container{
         this.pointX = 0;
         this.pointY = 0;
         this.dt = 0;
-        this.matrix = [
-            [
+        this.matrix = {
+            tetrominoT:{
+                shape:[
                 [0, 1, 0],
                 [1, 1, 0],
                 [0, 1, 0]
             ],
-            [
-                [0, 1, 0],
-                [0, 1, 0],
-                [0, 1, 1]
-            ],
-            [
-                [1, 1],
-                [1, 1]
-            ],
-            [
-                [0, 1, 0],
-                [0, 1, 0],
-                [1, 1, 0]
-            ],
-            [
-                [0, 1, 1],
-                [1, 1, 0],
-                [0, 0, 0]
-            ],
-            [
-                [1, 1, 0],
-                [0, 1, 1],
-                [0, 0, 0]
-            ],
-            [
-                [1, 0],
-                [1, 0],
-                [1, 0],
-                [1, 0]
-            ]
-        ]
-    
-        
+                color:"/assets/images/tileBlu.png",
+            },
+            tetrominoL:{
+                shape:[
+                    [0, 1, 0],
+                    [0, 1, 0],
+                    [0, 1, 1]
+                ],
+                color: "/assets/images/tileBlu.png",
+            },
+            tetriminoO:{
+                shape:[
+                    [1, 1],
+                    [1, 1]
+                ],
+                color:"/assets/images/tileGreen.png",
+            },
+            tetriminoJ:{
+                shape:[
+                    [0, 1, 0],
+                    [0, 1, 0],
+                    [1, 1, 0]
+                ],
+                color:"/assets/images/tileGrey.png",
+            },
+            tetriminoZ:{
+                shape:
+                    [
+                        [1, 1, 0],
+                        [0, 1, 1],
+                        [0, 0, 0]
+                    ],
+                color: "/assets/images/tilerred.png",
+            },
+            tetriminoL:{
+                shape:[
+                    [1, 0],
+                    [1, 0],
+                    [1, 0],
+                    [1, 0]
+                    ],
+                color:"/assets/images/tileTurquoise.png",
+            }
+        }
+            
         this.pices = [];
         this._initBoard();
         this._initFirstTetromino();
@@ -106,10 +119,9 @@ export class Board extends Container{
     }
 
     _initFirstTetromino(){
-        this.newArr = this.matrix[0];
-        let tetromino = new Tetromino(5, 0, this.matrix[0], this);
+        let tetromino = new Tetromino(5, 0, this.matrix.tetriminoJ.shape,this.matrix.tetriminoJ.color, this);
         this.currentTetromino = tetromino;
-
+        this.newArr = tetromino.matrix;
     }
 
     onLose(){
@@ -141,12 +153,7 @@ export class Board extends Container{
             this.currentTetromino.point.x -= 1;
         } 
         this.currentTetromino.updatePos(this.currentTetromino.matrix);
-        // this.updateTetrominoOnBoard(this.matrix, 5, 0)
     }
-
-    // moveDow(){
-    //     this.currentTetromino.point.y += 5;
-    // }
 
     dropDown(){
         if(this.islose){
@@ -164,9 +171,6 @@ export class Board extends Container{
             this.clearFullRows(this.arrBoard);
             this.spawnNewTetromino();
             this.emit(BoardEvent.LOSE, this.arrBoard)
-
-            // this.isGameOver(this.arrBoard);
-            
         }
     }
 
@@ -223,8 +227,9 @@ export class Board extends Container{
     }
 
     spawnNewTetromino(){
-        let matrix = this.getRamdomIndex(this.matrix)
-        let tetrimino = new Tetromino(5, 0, matrix, this);
+        let arr = Object.values(this.matrix);
+        let matrix = this.getRamdomIndex(arr);
+        let tetrimino = new Tetromino(5, 0, matrix.shape, matrix.color, this);
         this.currentTetromino = tetrimino;
         this.newArr = tetrimino.matrix;
         this.pices = this.children.filter(pice => pice.row !== undefined && pice.col !== undefined && pice instanceof Sprite);
