@@ -7,23 +7,24 @@ import { Score } from "../play/score";
 export class PlayScene extends Container{
     constructor(){
         super();
+        this.resultScore = 0;
         this._initBoard();
         this._initScore();
         this._initGameOver();
         this.dt = 0;
-        
     }
 
     _initBoard(){
       this.board = new Board();
       this.addChild(this.board);
-
       this.board.on(BoardEvent.ROWCLEARED, (rowClear) => {
           let score = this.calculateScore(rowClear);
           this.updateScore(score);
+          // this.gameOver.showScores(this.resultScore);
       });
       this.board.on(BoardEvent.LOSE, ()=>{
         this.isGameOver(this.board.arrBoard);
+
       })
     }
 
@@ -47,6 +48,9 @@ export class PlayScene extends Container{
     updateScore(score){
       this.score.scores += score;
       this.score.score.text = this.score.scores;
+      this.resultScore = this.score.scores;
+      // console.log(this.resultScore);
+
     }
 
     _initGameOver(){
@@ -64,6 +68,14 @@ export class PlayScene extends Container{
   }
     update(){
       this.board.update();
+    }
+
+    pause(){
+      this.board.pause();
+    }
+
+    resume(){
+      this.board.resume();
     }
 }
 

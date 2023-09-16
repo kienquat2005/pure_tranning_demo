@@ -2,7 +2,7 @@ import { Point, Sprite, Texture } from "pixi.js";
 import { GameConstant } from "../gameconstant";
 
 export class Tetromino{
-    constructor(x, y, type,color, board){
+    constructor(x, y, type, color, board){
         this.sprites = [];
         this.board = board;
         this.point = new Point();

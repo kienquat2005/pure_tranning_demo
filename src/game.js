@@ -14,9 +14,23 @@ export class Game {
         this.app.ticker.add((dt) => this.playScene.update(dt))
     }
 
+    static pause(){
+        this.playScene.pause();
+    }
 
+    static resume(){
+        this.playScene.resume();
+    }
 }
 
 window.onload = function () {
     Game.init();
+}
+
+window.onblur = ()=> {
+    Game.pause();
+}
+
+window.onfocus = ()=> {
+    Game.resume();
 }

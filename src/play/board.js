@@ -119,7 +119,7 @@ export class Board extends Container{
     }
 
     _initFirstTetromino(){
-        let tetromino = new Tetromino(5, 0, this.matrix.tetriminoJ.shape,this.matrix.tetriminoJ.color, this);
+        let tetromino = new Tetromino(5, 0, this.matrix.tetriminoO.shape,this.matrix.tetriminoO.color, this);
         this.currentTetromino = tetromino;
         this.newArr = tetromino.matrix;
     }
@@ -213,12 +213,29 @@ export class Board extends Container{
     lockToBotTom(){
         let point = this.currentTetromino.point;
         let nextRow = this.findnextPosition(this.currentTetromino.matrix, point.x, point.y);
-        this.lockTetromino(this.currentTetromino, point.x, nextRow);
+        let rs = this.isValidDirectionMove(this.currentTetromino.matrix, point.x, nextRow);
+        if(rs.isValid){
+            this.lockTetromino(this.currentTetromino, point.x, nextRow);
+        } else {
+            this.lockTetromino(this.currentTetromino, point.x, rs.row);
+        }
     }
-
+    
     lockTetromino(tetrimino, x, y){
         tetrimino.point.y = y;
         tetrimino.updatePos(tetrimino.matrix);
+    }
+
+    isValidDirectionMove(matrix, x, nextRow){
+        let rs = {isValid: true, row: nextRow}
+        for(let i = 0; i < nextRow; i++){
+            if(!this.isValidMove(matrix, x, i)){
+                rs.isValid = false;
+                rs.row = i - Math.floor(matrix.length / 2);
+                return rs;
+            }
+        }
+        return rs;
     }
 
     getRamdomIndex(array){
@@ -327,13 +344,15 @@ export class Board extends Container{
                 if (tetrimino[row][col] === 1) {
                     const gridY = startRow + row;
                     const gridX = startCol + col;
+                    // console.log(gridY, this.arrBoard.length);
                     if (gridX < 0 || gridX >= this.arrBoard[0].length || gridY >= this.arrBoard.length) {
+                        // console.log(gridY);
                         return false;
                     }
                     if(this.arrBoard[gridY][gridX] === 1){
+                        // console.log(gridY);
                         return false;
                     }
-
                 }
             }
         }
@@ -342,7 +361,7 @@ export class Board extends Container{
     }
 
     update(dt){
-        if(!this.currentTetromino){
+        if(!this.currentTetromino || this.isPaused){
             return;
         }
         this.dt += 1;
@@ -365,6 +384,14 @@ export class Board extends Container{
                 }
             }
         }
+    }
+
+    pause(){
+        this.isPaused = true;
+    }
+
+    resume(){
+        this.isPaused = false;
     }
 
 }
