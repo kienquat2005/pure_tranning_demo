@@ -6,6 +6,7 @@ export class PlayScene extends Container{
     constructor(){
         super();
         this._initBoard();
+        this.dt = 0;
         
     }
     _initBoard(){
@@ -13,8 +14,7 @@ export class PlayScene extends Container{
       this.addChild(this.board);
     }
     update(){
-      // this.board.moveDown();
-
+      this.board.update();
     }
 }
 
