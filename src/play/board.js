@@ -1,4 +1,7 @@
+
+import { Tween } from '@tweenjs/tween.js';
 import { Color, Container, Graphics, Sprite, Texture } from "pixi.js";
+import { Game } from '../game';
 import { GameConstant } from "../gameconstant";
 import { Gamelost } from "./gamelost";
 import { Score } from "./score";
@@ -40,6 +43,7 @@ export class Board extends Container{
         this.islose = false;
         this.pointX = 0;
         this.pointY = 0;
+        this.tweenDuration = 1000;
         this.dt = 0;
         this.matrix = {
             tetrominoT:{
@@ -119,9 +123,22 @@ export class Board extends Container{
     }
 
     _initFirstTetromino(){
-        let tetromino = new Tetromino(5, 0, this.matrix.tetriminoO.shape,this.matrix.tetriminoO.color, this);
+        let tetromino = new Tetromino(5, 0, this.matrix.tetrominoT.shape,this.matrix.tetrominoT.color, this);
         this.currentTetromino = tetromino;
         this.newArr = tetromino.matrix;
+    }
+
+    spawnNewTetromino(){
+        let arr = Object.values(this.matrix);
+        let matrix = this.getRamdomIndex(arr);
+        let tetrimino = new Tetromino(5, 0, matrix.shape, matrix.color, this);
+        this.currentTetromino = tetrimino;
+        this.newArr = tetrimino.matrix;
+        this.pices = this.children.filter(pice => pice.row !== undefined && pice.col !== undefined && pice instanceof Sprite);
+    }
+    getRamdomIndex(array){
+        const randomIndex = Math.floor(Math.random() * array.length);
+            return array[randomIndex];
     }
 
     onLose(){
@@ -140,7 +157,6 @@ export class Board extends Container{
             this.currentTetromino.point.x += 1;
         }
     }
-    
 
     moveRight(){
         if(this.islose){
@@ -165,12 +181,11 @@ export class Board extends Container{
             this.currentTetromino.updatePos(this.currentTetromino.matrix);
         }else{
             this.updateTetrominoOnBoard(this.currentTetromino, point.x, point.y - 1);
-            // console.log(this.arrBoard);
             this.currentTetromino.point.y -= 1;
             this.currentTetromino = null;
             this.clearFullRows(this.arrBoard);
             this.spawnNewTetromino();
-            this.emit(BoardEvent.LOSE, this.arrBoard)
+            this.emit(BoardEvent.LOSE, this.arrBoard);
         }
     }
 
@@ -178,15 +193,13 @@ export class Board extends Container{
         const numRows = matrix.length;
         const numCols = matrix[0].length;
         const newMaxtrix = [];
-        // Loop through the original matrix and populate the rotated matrix
-        for (let i = 0; i < numCols; i++) {
+        for(let i = 0; i < numCols; i++) {
             let newRows = [];
-          for (let j = numRows - 1; j >= 0; j--) {
+          for(let j = numRows - 1; j >= 0; j--) {
             newRows.push(matrix[j][i]);
           }
           newMaxtrix.push(newRows);
         }
-      
         return newMaxtrix;
     } 
 
@@ -238,20 +251,6 @@ export class Board extends Container{
         return rs;
     }
 
-    getRamdomIndex(array){
-        const randomIndex = Math.floor(Math.random() * array.length);
-            return array[randomIndex];
-    }
-
-    spawnNewTetromino(){
-        let arr = Object.values(this.matrix);
-        let matrix = this.getRamdomIndex(arr);
-        let tetrimino = new Tetromino(5, 0, matrix.shape, matrix.color, this);
-        this.currentTetromino = tetrimino;
-        this.newArr = tetrimino.matrix;
-        this.pices = this.children.filter(pice => pice.row !== undefined && pice.col !== undefined && pice instanceof Sprite);
-    }
-
     isFullRow(row,board){
         for(let col = 0; col < board[row].length; col++){
             if(board[row][col] === 0){
@@ -262,6 +261,7 @@ export class Board extends Container{
     };
 
     clearFullRows(board){
+
         const numRows = board.length;
         let clearedRows = 0;
         let rows = [];
@@ -272,9 +272,14 @@ export class Board extends Container{
           }
         }
         if(rows.length > 0){
-            this.removePiceByRows(rows);
             this.removeBoardDataByRows(rows);
-            this.dropPices(rows, clearedRows);
+            this.removePiceByRows(rows);
+            const tween = new Tween(clearedRows)
+            .to({alpha : 0 },this.tweenDuration)
+            .onComplete(()=>{
+                this.dropPices(rows,clearedRows);
+            })
+            .start(Game.currentTime);
             this.emit(BoardEvent.ROWCLEARED, clearedRows);
         }
     }
@@ -297,7 +302,7 @@ export class Board extends Container{
                 if(row === i){
                     this.arrBoard.splice(i, 1);
                 }
-            }      
+            } 
         }
         for (let index = 0; index < rows.length; index++) {
             this.arrBoard.unshift(Array(this.arrBoard[0].length).fill(0));
@@ -310,8 +315,12 @@ export class Board extends Container{
             const pice = this.pices[i];
             rows.forEach(r => {
                 if(pice.row === r){
-                    this.removeChild(pice);
-                    pice.destroy();
+                    const rowtoTween = pice;
+                    const tween = new Tween(rowtoTween)
+                    .to({alpha :0},this.tweenDuration)
+                    .onComplete(()=>{
+                    })
+                    .start(Game.currentTime);
                 }
             });
         }
@@ -344,13 +353,10 @@ export class Board extends Container{
                 if (tetrimino[row][col] === 1) {
                     const gridY = startRow + row;
                     const gridX = startCol + col;
-                    // console.log(gridY, this.arrBoard.length);
                     if (gridX < 0 || gridX >= this.arrBoard[0].length || gridY >= this.arrBoard.length) {
-                        // console.log(gridY);
                         return false;
                     }
                     if(this.arrBoard[gridY][gridX] === 1){
-                        // console.log(gridY);
                         return false;
                     }
                 }

@@ -54,5 +54,4 @@ export class Tetromino{
         this.sprites = newArr;
         this.matrix = type;
     }
-
 }

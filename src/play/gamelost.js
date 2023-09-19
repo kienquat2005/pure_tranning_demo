@@ -1,14 +1,16 @@
 import { Container, FillStyle, Graphics, Text } from "pixi.js";
 import { GameConstant } from "../gameconstant";
+import { gameStateEvent } from "../scenes/playScene";
+import { Score } from "./score";
 
 export class Gamelose extends Container{
     constructor(){
         super();
+        this.resultScore = 0;
         this.baseGameLose();
         this.showText();
         this.restart();
-        // this.showScore();
-
+        this.showScore();
     }
     baseGameLose(){
         this.gamelose = new Graphics()
@@ -20,6 +22,7 @@ export class Gamelose extends Container{
         this.gamelose.endFill();
         this.gamelose.x = 350;
         this.gamelose.y = 500;
+        
     }
     showText(){
         this.texty = new Text("Game Over",{
@@ -28,21 +31,28 @@ export class Gamelose extends Container{
         })
         this.texty.anchor.set(0.5,0.5);
         this.texty.x = 350;
-        this.texty.y =320;
+        this.texty.y = 320;
         this.addChild(this.texty);
     }
     
-    showScore(score){
-        this.showScores = new Text("Scores :"+ score,{
+    showScore(){
+        this.showScoreText = new Text("Score:",{
+            fontSize: 50,
+            fill: "WHITE"
+        });
+        this.showScoreText.x = 320;
+        this.showScoreText.y = 500;
+        this.addChild(this.showScoreText);
+        this.showScoreText.anchor.set(0.5,0.5);
+
+        this.showScores = new Text(this.resultScore,{
             fontSize: 50,
             fill: "WHITE"
         })
-        this.showScores.x = 350;
-        this.showScores.y = 450;
+        this.showScores.x = 450;
+        this.showScores.y = 500;
         this.addChild(this.showScores);
         this.showScores.anchor.set(0.5,0.5)
-
-        // this.resulScore = new Text(score,)
     }
 
     restart(){

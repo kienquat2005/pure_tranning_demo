@@ -3,7 +3,6 @@ import { Board, BoardEvent } from "../play/board";
 import { Gamelose, Gamelost } from "../play/gamelost";
 import { Score } from "../play/score";
 
-
 export class PlayScene extends Container{
     constructor(){
         super();
@@ -20,12 +19,10 @@ export class PlayScene extends Container{
       this.board.on(BoardEvent.ROWCLEARED, (rowClear) => {
           let score = this.calculateScore(rowClear);
           this.updateScore(score);
-          // this.gameOver.showScores(this.resultScore);
       });
       this.board.on(BoardEvent.LOSE, ()=>{
         this.isGameOver(this.board.arrBoard);
-
-      })
+      });
     }
 
     _initScore(){
@@ -45,19 +42,19 @@ export class PlayScene extends Container{
       return score;
     }
 
-    updateScore(score){
-      this.score.scores += score;
-      this.score.score.text = this.score.scores;
-      this.resultScore = this.score.scores;
-      // console.log(this.resultScore);
-
-    }
-
     _initGameOver(){
       this.gameOver = new Gamelose();
       this.addChild(this.gameOver);
       this.gameOver.visible = false;
     }
+
+    updateScore(score){
+      this.score.scores += score;
+      this.score.score.text = this.score.scores;
+      this.gameOver.resultScore = this.score.scores;
+      this.gameOver.showScores.text = this.gameOver.resultScore;
+    }
+
     isGameOver(board){
       for( let col = 0; col < board[0].length; col++){
           if(board[0][col] === 1){
@@ -66,6 +63,7 @@ export class PlayScene extends Container{
           }
       }
   }
+
     update(){
       this.board.update();
     }
