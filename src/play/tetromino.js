@@ -8,6 +8,7 @@ export class Tetromino{
         this.point = new Point();
         this.matrix = type;
         this.point.set(x, y);
+        this.color = color;
         this.createTetromino(type,color);   
     }
     

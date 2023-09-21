@@ -1,5 +1,5 @@
 
-import { Tween } from '@tweenjs/tween.js';
+import { Easing, Tween } from '@tweenjs/tween.js';
 import { Color, Container, Graphics, Sprite, Texture } from "pixi.js";
 import { Game } from '../game';
 import { GameConstant } from "../gameconstant";
@@ -43,14 +43,13 @@ export class Board extends Container{
         this.islose = false;
         this.pointX = 0;
         this.pointY = 0;
-        this.tweenDuration = 1000;
         this.dt = 0;
         this.matrix = {
             tetrominoT:{
                 shape:[
-                [0, 1, 0],
-                [1, 1, 0],
-                [0, 1, 0]
+                [0, 1, 0,],
+                [1, 1, 0,],
+                [0, 1, 0,]
             ],
                 color:"/assets/images/tileBlu.png",
             },
@@ -60,7 +59,7 @@ export class Board extends Container{
                     [0, 1, 0],
                     [0, 1, 1]
                 ],
-                color: "/assets/images/tileBlu.png",
+                color: "/assets/images/tileYellow.png",
             },
             tetriminoO:{
                 shape:[
@@ -82,6 +81,15 @@ export class Board extends Container{
                     [
                         [1, 1, 0],
                         [0, 1, 1],
+                        [0, 0, 0]
+                    ],
+                color: "/assets/images/tilePurple.png",
+            },
+            tetriminoS:{
+                shape:
+                    [
+                        [0, 1, 1],
+                        [1, 1, 0],
                         [0, 0, 0]
                     ],
                 color: "/assets/images/tilerred.png",
@@ -170,6 +178,20 @@ export class Board extends Container{
         } 
         this.currentTetromino.updatePos(this.currentTetromino.matrix);
     }
+    moveDow(){
+        if(this.islose){
+            return;
+        }
+        this.currentTetromino.point.y += 1;
+        let point = this.currentTetromino.point;
+        if(this.isValidMove(this.currentTetromino.matrix, point.x, point.y)){
+            this.currentTetromino.updatePos(this.currentTetromino.matrix);
+        } else{
+            this.updateTetrominoOnBoard(this.currentTetromino, point.x, point.y-1);
+            this.currentTetromino.point.y -= 1;
+
+        }
+    }
 
     dropDown(){
         if(this.islose){
@@ -182,11 +204,12 @@ export class Board extends Container{
         }else{
             this.updateTetrominoOnBoard(this.currentTetromino, point.x, point.y - 1);
             this.currentTetromino.point.y -= 1;
+            let currentColor = this.currentTetromino.color;
             this.currentTetromino = null;
-            this.clearFullRows(this.arrBoard);
-            this.spawnNewTetromino();
+            this.clearFullRows(this.arrBoard, currentColor);
             this.emit(BoardEvent.LOSE, this.arrBoard);
         }
+        
     }
 
     rotateMatrix(matrix) {
@@ -260,8 +283,7 @@ export class Board extends Container{
         return true;
     };
 
-    clearFullRows(board){
-
+    clearFullRows(board, currentColor){
         const numRows = board.length;
         let clearedRows = 0;
         let rows = [];
@@ -273,14 +295,18 @@ export class Board extends Container{
         }
         if(rows.length > 0){
             this.removeBoardDataByRows(rows);
-            this.removePiceByRows(rows);
+            this.removePiceByRows(rows, currentColor);
             const tween = new Tween(clearedRows)
-            .to({alpha : 0 },this.tweenDuration)
+            .to({alpha : 0 },GameConstant.TWEEN_DURATION)
             .onComplete(()=>{
                 this.dropPices(rows,clearedRows);
+                this.spawnNewTetromino();
             })
             .start(Game.currentTime);
             this.emit(BoardEvent.ROWCLEARED, clearedRows);
+        }
+        else{
+            this.spawnNewTetromino();
         }
     }
 
@@ -309,18 +335,26 @@ export class Board extends Container{
         }
     }
 
-    removePiceByRows(rows){
+    removePiceByRows(rows, currentColor){
         let row = this.pices.length;
+        this.pices.sort((a, b) => a.x - b.x);
+        let texture = Texture.from(currentColor);
         for (let i = 0; i < row; i++) {
             const pice = this.pices[i];
             rows.forEach(r => {
                 if(pice.row === r){
-                    const rowtoTween = pice;
-                    const tween = new Tween(rowtoTween)
-                    .to({alpha :0},this.tweenDuration)
-                    .onComplete(()=>{
-                    })
+                    pice.anchor.set(0.5);
+                    pice.x += pice.width/2;
+                    pice.y += pice.height/2;
+                    pice.texture = texture;
+                    const scaleTween = new Tween(pice.scale)
+                    .to({x: 0 ,y: 0}, GameConstant.TWEEN_DURATION)
+                    .delay(i * 0.5)
                     .start(Game.currentTime);
+                    const rotationTween = new Tween(pice)
+                    .to({rotation: Math.PI * 4},GameConstant.TWEEN_DURATION)
+                    .delay(i * 0.5)
+                    .start(Game.currentTime)
                 }
             });
         }
@@ -329,6 +363,9 @@ export class Board extends Container{
    
     registerEvent() {
         document.addEventListener("keydown", (e) => {
+            if(!this.currentTetromino){
+                return;
+            }
             if(e.code === "KeyA") {
                 this.moveLeft();
             }
@@ -339,7 +376,10 @@ export class Board extends Container{
                 this.rotation();
             }
             else if(e.code === "KeyS"){
-                this.lockToBotTom();
+                this.moveDow();
+            }
+            else if(e.code === "Space"){
+                this.lockToBotTom(); 
             }
         })
     }

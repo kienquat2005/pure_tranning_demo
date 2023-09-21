@@ -26,7 +26,7 @@ export class Score extends Container{
             fill: "white",
         });
         this.score.x = 250;
-        this.score.y = 1120;
+        this.score.y = 1100;
         this.addChild(this.score);
     }
     scoreText(){
@@ -36,7 +36,7 @@ export class Score extends Container{
             fill: "white",
         });
         this.scoreText.x = 100;
-        this.scoreText.y = 1120;
+        this.scoreText.y = 1100;
         this.addChild(this.scoreText);
     }
 
