@@ -1,4 +1,6 @@
+import { Tween } from "@tweenjs/tween.js";
 import { Point, Sprite, Texture } from "pixi.js";
+import { Game } from "../game";
 import { GameConstant } from "../gameconstant";
 
 export class Tetromino{
@@ -54,5 +56,17 @@ export class Tetromino{
         }
         this.sprites = newArr;
         this.matrix = type;
+    }
+
+    onDrop(){
+        this.sprites.forEach(sprite => {
+            new Tween(sprite)
+            .to({alpha : 0.7},100)
+            .repeat(1) 
+            .onComplete(()=>{
+            })
+            .yoyo(true)
+            .start(Game.currentTime)
+        });
     }
 }

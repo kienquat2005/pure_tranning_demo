@@ -6,5 +6,5 @@ export const GameConstant = Object.freeze({
     HEIGHTBASE_GAMELOST: 500,
     SQUARE_SPACE : 50,
     TETROMIO_SPACE : 50,
-    TWEEN_DURATION: 500
+    TWEEN_DURATION: 400
   });
