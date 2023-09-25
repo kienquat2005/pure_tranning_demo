@@ -1,7 +1,10 @@
+import pixiSound from "pixi-sound";
 import { Container, UPDATE_PRIORITY } from "pixi.js";
 import { Board, BoardEvent } from "../play/board";
 import { Gamelose, Gamelost } from "../play/gamelost";
 import { Score } from "../play/score";
+// import { Sound } from "@pixi/sound";
+import { Howl } from "howler";
 
 export class PlayScene extends Container{
     constructor(){
@@ -9,6 +12,7 @@ export class PlayScene extends Container{
         this.resultScore = 0;
         this._initBoard();
         this._initScore();
+        this.sound();
         this._initGameOver();
         this.dt = 0;
     }
@@ -60,9 +64,21 @@ export class PlayScene extends Container{
           if(board[0][col] === 1){
               this.board.onLose();
               this.gameOver.visible = true;
+              this.gameOver.onSoundGameOver();
+              this.audio.stop();
           }
+
       }
-  }
+    }
+    sound(){
+      this.audio = new Howl({
+        src: "/assets/sound/Tetris.mp3",
+        autoplay: true,
+        loop: false,
+        volume: 0.8,
+      })
+      this.audio.play();
+    }
 
     update(){
       this.board.update();

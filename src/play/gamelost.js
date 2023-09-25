@@ -2,6 +2,7 @@ import { Container, FillStyle, Graphics, Text } from "pixi.js";
 import { GameConstant } from "../gameconstant";
 import { gameStateEvent } from "../scenes/playScene";
 import { Score } from "./score";
+import { Howl } from "howler";
 
 export class Gamelose extends Container{
     constructor(){
@@ -80,5 +81,12 @@ export class Gamelose extends Container{
     }
     readload(){
         location.reload();
+    }
+    onSoundGameOver(){
+        this.audion = new Howl({
+            src:"/assets/sound/gameover.mp3",
+            volume: 0.5
+        })
+        this.audion.play();
     }
 }

@@ -11,7 +11,7 @@ export class Tetromino{
         this.matrix = type;
         this.point.set(x, y);
         this.color = color;
-        this.createTetromino(type,color);   
+        this.createTetromino(type,color);    
     }
     
     createTetromino(type,color){
@@ -61,12 +61,38 @@ export class Tetromino{
     onDrop(){
         this.sprites.forEach(sprite => {
             new Tween(sprite)
-            .to({alpha : 0.7},100)
+            .to({alpha : 0.5},100)
             .repeat(1) 
             .onComplete(()=>{
             })
             .yoyo(true)
             .start(Game.currentTime)
         });
+    }
+    onMoveDown(){
+        this.sprites.forEach(sprite =>{
+            new Tween(sprite)
+            .to({alpha: 0},100)
+            .repeat(1)
+            .onComplete(()=>{
+                // console.log(1);
+            })
+            .yoyo(true)
+            .start(Game.currentTime)
+        })
+    }
+    onMoveSound(){
+        const audio = new Howl({
+            src:"/assets/sound/move.mp3",
+            volume: 0.5,
+        })
+        audio.play();
+    }
+    onRotationSound(){
+        const audio = new Howl({
+            src:"/assets/sound/rotation.mp3",
+            volume: 0.5
+        })
+        audio.play();
     }
 }

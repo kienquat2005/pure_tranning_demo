@@ -39,7 +39,6 @@ export class Board extends Container{
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ];
-
         this.islose = false;
         this.pointX = 0;
         this.pointY = 0;
@@ -162,6 +161,7 @@ export class Board extends Container{
         let point = this.currentTetromino.point;
         if(this.isValidMove(this.currentTetromino.matrix, point.x, point.y)){
             this.currentTetromino.updatePos(this.currentTetromino.matrix);
+            this.currentTetromino.onMoveSound();
         } else {
             this.currentTetromino.point.x += 1;
         }
@@ -174,6 +174,7 @@ export class Board extends Container{
         this.currentTetromino.point.x += 1;
         let point = this.currentTetromino.point;
         if(this.isValidMove(this.currentTetromino.matrix, point.x, point.y)){
+            this.currentTetromino.onMoveSound();
         } else {
             this.currentTetromino.point.x -= 1;
         } 
@@ -181,7 +182,7 @@ export class Board extends Container{
     }
 
     moveDown(){
-        if(this.islose){
+        if(this.currentTetromino.isLocked){
             return;
         }
         this.currentTetromino.point.y += 1;
@@ -189,6 +190,8 @@ export class Board extends Container{
         if(this.isValidMove(this.currentTetromino.matrix, point.x, point.y)){
             this.currentTetromino.updatePos(this.currentTetromino.matrix);
         } else{
+            this.currentTetromino.onMoveDown();
+            this.currentTetromino.isLocked = true;
             this.updateTetrominoOnBoard(this.currentTetromino, point.x, point.y-1);
             this.currentTetromino.point.y -= 1;
         }
@@ -202,7 +205,7 @@ export class Board extends Container{
         let point = this.currentTetromino.point;
         if(this.isValidMove(this.currentTetromino.matrix, point.x, point.y)){
             this.currentTetromino.updatePos(this.currentTetromino.matrix);
-            this.currentTetromino.onDrop(); 
+            // this.currentTetromino.onMoveSound();
         }else{
             this.updateTetrominoOnBoard(this.currentTetromino, point.x, point.y - 1);
             this.currentTetromino.point.y -= 1;
@@ -228,12 +231,13 @@ export class Board extends Container{
     } 
 
     rotation(){
-        if(this.isloss){
+        if(this.islose){
             return;
         }
         this.newArr = this.rotateMatrix(this.newArr);
         let point = this.currentTetromino.point;
         if(this.isValidMove(this.newArr, point.x, point.y)){
+            this.currentTetromino.onRotationSound();
             this.currentTetromino.updatePos(this.newArr, this.currentTetromino.point.x, this.currentTetromino.point.y);
         }
     }
@@ -259,9 +263,14 @@ export class Board extends Container{
     }
     
     lockTetromino(tetrimino, x, y){
+        if(tetrimino.isLocked){
+            return;
+        }
         tetrimino.point.y = y;
         tetrimino.updatePos(tetrimino.matrix);
         tetrimino.onDrop();
+        this.currentTetromino.onRotationSound();
+        tetrimino.isLocked = true;
     }
 
     isValidDirectionMove(matrix, x, nextRow){
@@ -349,6 +358,11 @@ export class Board extends Container{
                     pice.x += pice.width/2;
                     pice.y += pice.height/2;
                     pice.texture = texture;
+                    const audio = new Howl({
+                        src:"/assets/sound/clear.mp3",
+                        volume: 0.2,
+                    })
+                    audio.play();
                     const scaleTween = new Tween(pice.scale)
                     .to({x: 0 ,y: 0}, GameConstant.TWEEN_DURATION)
                     .delay(i * 0.2)
