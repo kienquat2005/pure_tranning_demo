@@ -1,4 +1,4 @@
-import { Container, Text } from "pixi.js";
+import { Container, Sprite, Text, Texture } from "pixi.js";
 
 export class Score extends Container{
     constructor(){
@@ -9,15 +9,13 @@ export class Score extends Container{
         this.scoreText();
     }
     nameGame(){
-        this.nameText = new Text("GAME TETRIS",{
-            fontSize: "Arial",
-            fontSize: 70,
-            fill: "white"
-        })
-        this.nameText.anchor.set(0.5, 0.5);
-        this.nameText.x = 350;
-        this.nameText.y = 50;
-        this.addChild(this.nameText);
+        this.tetrisTitle = new Sprite(Texture.from("/assets/images/project-logo.png"))
+        this.tetrisTitle.anchor.set(0.5, 0.5);
+        this.tetrisTitle.x = 350;
+        this.tetrisTitle.y = 50;
+        this.addChild(this.tetrisTitle);
+        this.tetrisTitle.scale.x = 0.8;
+        this.tetrisTitle.scale.y = 0.8;
     }
     score(){
         this.score = new Text(this.scores,{

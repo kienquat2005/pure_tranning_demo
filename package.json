@@ -27,8 +27,9 @@
     "@tweenjs/tween.js": "^21.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "esbuild-loader": "^2.20.0",
+    "@pixi/particle-emitter": "^5.0.8",
     "howler": "^2.2.4",
-    "pixi-sound": "^3.0.5",
+    "@pixi/sound": "^5.2.1",
     "pixi.js": "^7.3.0"
   }
 }

@@ -1,5 +1,6 @@
 import { Tween } from "@tweenjs/tween.js";
 import { Point, Sprite, Texture } from "pixi.js";
+import { Effect } from "../effect/effect";
 import { Game } from "../game";
 import { GameConstant } from "../gameconstant";
 
@@ -11,7 +12,7 @@ export class Tetromino{
         this.matrix = type;
         this.point.set(x, y);
         this.color = color;
-        this.createTetromino(type,color);    
+        this.createTetromino(type,color);
     }
     
     createTetromino(type,color){
@@ -55,7 +56,11 @@ export class Tetromino{
             }
         }
         this.sprites = newArr;
-        this.matrix = type;
+        this.matrix = type; 
+    }
+    _initEffect(){
+        this.effect = new Effect();
+        this.addChild(this.effect);
     }
 
     onDrop(){
@@ -84,14 +89,14 @@ export class Tetromino{
     onMoveSound(){
         const audio = new Howl({
             src:"/assets/sound/move.mp3",
-            volume: 0.5,
+            volume: 0.3,
         })
         audio.play();
     }
     onRotationSound(){
         const audio = new Howl({
             src:"/assets/sound/rotation.mp3",
-            volume: 0.5
+            volume: 0.3
         })
         audio.play();
     }

@@ -1,20 +1,26 @@
-import pixiSound from "pixi-sound";
+
 import { Container, UPDATE_PRIORITY } from "pixi.js";
 import { Board, BoardEvent } from "../play/board";
 import { Gamelose, Gamelost } from "../play/gamelost";
 import { Score } from "../play/score";
-// import { Sound } from "@pixi/sound";
 import { Howl } from "howler";
+import { BackGround } from "../ui/background";
 
 export class PlayScene extends Container{
     constructor(){
         super();
         this.resultScore = 0;
+        this._initBackGround();
+        this._initScore();  
         this._initBoard();
-        this._initScore();
         this.sound();
         this._initGameOver();
         this.dt = 0;
+    }
+
+    _initBackGround(){
+      this.bg = new BackGround();
+      this.addChild(this.bg);
     }
 
     _initBoard(){

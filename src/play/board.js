@@ -1,8 +1,11 @@
 
 import { Easing, Tween } from '@tweenjs/tween.js';
 import { Color, Container, GC_MODES, Graphics, Sprite, Texture } from "pixi.js";
+import { Effect } from '../effect/effect';
+import { EffectDrop } from '../effect/effectDrop';
 import { Game } from '../game';
 import { GameConstant } from "../gameconstant";
+import { BackGround } from '../ui/background';
 import { Gamelost } from "./gamelost";
 import { Score } from "./score";
 import { Tetromino } from "./tetromino";
@@ -17,6 +20,7 @@ export class Board extends Container{
     constructor(){
         super();
         this.currentTetromino = null;
+        this.interval = 30;
         this.arrBoard = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -110,6 +114,8 @@ export class Board extends Container{
         this.registerEvent();
         this.pices = this.children.filter(pice => pice.row !== undefined && pice.col !== undefined && pice instanceof Sprite);
         this.position.set(100);
+        this._initEffect();
+        this._initEffectDrop();
     }
 
     _initBoard(){
@@ -124,6 +130,7 @@ export class Board extends Container{
                         this.addChild(square);
                         square.x = j * GameConstant.SQUARE_SPACE;
                         square.y = i * GameConstant.SQUARE_SPACE;
+                        square.alpha = 0.1
                 }
             }
         }
@@ -135,6 +142,15 @@ export class Board extends Container{
         this.newArr = tetromino.matrix;
     }
 
+    _initEffect(){
+        this.effect = new Effect();
+        this.addChild(this.effect);
+    }
+    _initEffectDrop(){
+        this.effectDrop = new EffectDrop();
+        this.addChild(this.effectDrop);
+    }
+    
     spawnNewTetromino(){
         let arr = Object.values(this.matrix);
         let matrix = this.getRamdomIndex(arr);
@@ -142,6 +158,7 @@ export class Board extends Container{
         this.currentTetromino = tetrimino;
         this.newArr = tetrimino.matrix;
         this.pices = this.children.filter(pice => pice.row !== undefined && pice.col !== undefined && pice instanceof Sprite);
+        
     }
 
     getRamdomIndex(array){
@@ -205,7 +222,6 @@ export class Board extends Container{
         let point = this.currentTetromino.point;
         if(this.isValidMove(this.currentTetromino.matrix, point.x, point.y)){
             this.currentTetromino.updatePos(this.currentTetromino.matrix);
-            // this.currentTetromino.onMoveSound();
         }else{
             this.updateTetrominoOnBoard(this.currentTetromino, point.x, point.y - 1);
             this.currentTetromino.point.y -= 1;
@@ -213,7 +229,8 @@ export class Board extends Container{
             this.currentTetromino = null;
             this.clearFullRows(this.arrBoard, currentColor);
             this.emit(BoardEvent.LOSE, this.arrBoard);
-        }    
+            this.interval = 30;
+        }
     }
 
     rotateMatrix(matrix) {
@@ -257,18 +274,30 @@ export class Board extends Container{
         let rs = this.isValidDirectionMove(this.currentTetromino.matrix, point.x, nextRow);
         if(rs.isValid){
             this.lockTetromino(this.currentTetromino, point.x, nextRow);
+            // this.effectDrop.playDropParticle();
         } else {
             this.lockTetromino(this.currentTetromino, point.x, rs.row);
         }
     }
+
+    // lockToBotTom(){
+    //     this.interval = 0.5;
+    //     this.effect.x = this.currentTetromino.point.x * GameConstant.TETROMIO_SPACE;
+    //     this.effect.y = this.currentTetromino.point.y * GameConstant.TETROMIO_SPACE - 100;
+    //     this.effect.playDropParticle();
+    // }
     
     lockTetromino(tetrimino, x, y){
         if(tetrimino.isLocked){
             return;
         }
-        tetrimino.point.y = y;
-        tetrimino.updatePos(tetrimino.matrix);
         tetrimino.onDrop();
+        tetrimino.point.y = y;
+        tetrimino.point.x = x
+        this.effectDrop.x = x * GameConstant.TETROMIO_SPACE;
+        this.effectDrop.y = y * GameConstant.TETROMIO_SPACE - 550;
+        this.effectDrop.playDropParticle();
+        tetrimino.updatePos(tetrimino.matrix);
         this.currentTetromino.onRotationSound();
         tetrimino.isLocked = true;
     }
@@ -354,7 +383,11 @@ export class Board extends Container{
             const pice = this.pices[i];
             rows.forEach(r => {
                 if(pice.row === r){
+                    this.effect.x = pice.x - 200;
+                    this.effect.y = pice.y;
                     pice.anchor.set(0.5);
+                    this.effect.playClearRowFullParticle();
+                    // this.effect.play();
                     pice.x += pice.width/2;
                     pice.y += pice.height/2;
                     pice.texture = texture;
@@ -362,6 +395,7 @@ export class Board extends Container{
                         src:"/assets/sound/clear.mp3",
                         volume: 0.2,
                     })
+
                     audio.play();
                     const scaleTween = new Tween(pice.scale)
                     .to({x: 0 ,y: 0}, GameConstant.TWEEN_DURATION)
@@ -396,6 +430,7 @@ export class Board extends Container{
             }
             else if(e.code === "Space"){
                 this.lockToBotTom(); 
+
             }
         })
     }
@@ -427,9 +462,10 @@ export class Board extends Container{
             return;
         }
         this.dt += 1;
-        if(this.dt % 30 === 0) {
+        if(this.dt % this.interval === 0) {
             this.dropDown();
       }
+    //   this.effect.play();
     }
 
     updateTetrominoOnBoard(tetromino, x, y){
