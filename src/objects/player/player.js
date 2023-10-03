@@ -10,8 +10,9 @@ export class Player extends Container{
         this.jumpVelocity = 10;
         this.graviti = 0.5;
         this.groundY = 525;
-        this.rotationSpeed = 0.1;
+        this.rotationSpeed = 0.078;
         this.balanceSpeed = 0.1;
+        this.degree = 0;
         this._initPlayer();
         this.registerEvent(); 
 
@@ -50,10 +51,9 @@ export class Player extends Container{
 
     updatePlayer(){
         if(this.isJumping){
+            // this.player.rotation += this.rotationSpeed
             this.player.y -= this.jumpVelocity;
             this.jumpVelocity -= this.graviti;
-            this.player.rotation += this.rotationSpeed;  
-            console.log(this.player.rotation);
             if(this.jumpVelocity <=0){
                 this.isJumping = false;
                 this.isFalling = true;
@@ -66,13 +66,24 @@ export class Player extends Container{
                 console.log(this.player.rotation)
                 this.player.y = this.groundY;
                 this.isFalling = false;
+                this.player.rotation = this.degreesToRadians(this.degree);
             }
         } 
     }
+
+    radiansToDegrees(radians) {
+        return radians * (180 / Math.PI);
+    }
+
+    degreesToRadians(degrees) {
+        return degrees * (Math.PI / 180);
+      }
+      
     
     registerEvent(){
         document.addEventListener("keydown",(e)=>{
             if(e.code === "Space"){
+                this.degree += 90;
                 this.jump();
                 this.fall();
             }
