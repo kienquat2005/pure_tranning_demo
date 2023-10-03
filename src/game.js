@@ -6,8 +6,8 @@ import TWEEN from "@tweenjs/tween.js";
 export class Game {
     static init() {
         this.app = new Application({
-            width : GameConstant.GAME_HEIGHT,
-            height : GameConstant.GAME_WIDTH,
+            width : GameConstant.GAME_WIDTH,
+            height : GameConstant.GAME_HEIGHT,
         });
         document.body.appendChild(this.app.view);
         this.playScene = new PlayScene();
