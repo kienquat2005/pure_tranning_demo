@@ -15,8 +15,7 @@ export class Game {
         this.app.stage.addChild(this.playScene);
         this.app.ticker.add((dt) => {
             this.update(dt);
-        });
-        
+        }); 
     }
     
     static update(dt){

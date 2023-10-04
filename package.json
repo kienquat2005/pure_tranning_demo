@@ -24,7 +24,10 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@pixi/particle-emitter": "^5.0.8",
+    "@tweenjs/tween.js": "^21.0.0",
     "clean-webpack-plugin": "^4.0.0",
+    "emitter": "^0.0.5",
     "esbuild-loader": "^2.20.0",
     "pixi.js": "^7.0.4"
   }
