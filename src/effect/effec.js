@@ -7,7 +7,7 @@ export class Effect extends Container{
         super();
         this.group = new Container();
         this.addChild(this.group);
-        this._initEffect(); 
+        // this._initEffect();
     }
 
     _initEffect(){
@@ -17,10 +17,10 @@ export class Effect extends Container{
         this.effect.autoUpdate = true;
     }
 
-    play(){
-        this.effect.emit = true;
-    }
-    stop(){
-        this.effect.emit = false;
-    }
+    // play(){
+    //     this.effect.emit = true;
+    // }
+    // stop(){
+    //     this.effect.emit = false;
+    // }
 }

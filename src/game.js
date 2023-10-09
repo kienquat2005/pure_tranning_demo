@@ -24,13 +24,13 @@ export class Game {
         TWEEN.update(this.currentTime);
     }
 
-    // static pause(){
-    //     this.playScene.pause();
-    // }
+    static pause(){
+        this.playScene.pause();
+    }
 
-    // static resume(){
-    //     this.playScene.resume();
-    // }
+    static resume(){
+        this.playScene.resume();
+    }
 }
 
 window.onload = function () {
@@ -38,9 +38,9 @@ window.onload = function () {
 }
 
 window.onblur = ()=> {
-    // Game.pause();
+    Game.pause();
 }
 
 window.onfocus = ()=> {
-    // Game.resume();
+    Game.resume();
 }
