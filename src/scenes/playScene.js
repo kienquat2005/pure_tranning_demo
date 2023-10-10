@@ -27,7 +27,7 @@ export class PlayScene extends Container{
     this.player = new Player();
     this.addChild(this.player);
     this.player.x = 300
-    this.player.y = 500;
+    this.player.y = 510;
   }
 
   playerColliderWithSpike(){
@@ -58,9 +58,19 @@ export class PlayScene extends Container{
           this.player.isFalling = false;
         }else {
           this.map.mapVelocity = 0;
+          this.player.ondie();
         }
       } 
     });
+  }
+
+  playerColliderWithSawBlade(){
+    this,this.map.sawblade.forEach((sawblade)=>{
+      if(CollisionDetector.detectCollision(this.player,sawblade)){
+        this.map.mapVelocity = 0;
+        this.player.ondie();
+      }
+    })
   }
 
   playerColliderWithCrusher(){
@@ -71,6 +81,7 @@ export class PlayScene extends Container{
         }
         else{
           this.map.mapVelocity = 0;
+          this.player.ondie()
         }
       }
     })
@@ -79,11 +90,12 @@ export class PlayScene extends Container{
   playerColliderWithRectTangle(){
     this.map.rectangles.forEach((rectangle)=>{
       if(CollisionDetector.detectCollision(this.player,rectangle)){
-        if(this.player.y <= rectangle.y){
+        if(this.player.y <= rectangle.y ){
           this.player.isFalling = false;
         }
         else{
           this.map.mapVelocity = 0
+          // this.player.on()
         }
       }
     })
@@ -97,8 +109,9 @@ export class PlayScene extends Container{
   update(){
     this.map.update();
     this.playerColliderWithPlatform();
-    // this.playerColliderWithSpike();
-    // this.playerColliderWithSquare();
+    this.playerColliderWithSpike();
+    this.playerColliderWithSquare();
+    this.playerColliderWithSawBlade();
     this.playerColliderWithCrusher()
     this.playerColliderWithRectTangle();
     this.player.update();

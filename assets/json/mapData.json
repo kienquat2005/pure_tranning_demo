@@ -63,82 +63,65 @@
         {
             "type" : "spike",
             "x" : 1000,
-            "y" : 560,
-            "rotation": 0
+            "y" : 560
         },
         {
             "type" : "spike",
             "x" : 1844,
-            "y" : 560,
-            "rotation": 0   
+            "y" : 560
         } ,
 
         {
             "type" : "spike",
             "x" : 1876,
-            "y" : 560,
-            "rotation": 0 
-        },
-
-        {
-            "type" : "spike",
-            "x" : 2625,
-            "y" : 560,
-            "rotation": 0 
+            "y" : 560
         },
         {
             "type" : "spike",
             "x" : 2668,
-            "y" : 560,
-            "rotation": 0 
+            "y" : 560
         },
         
         {
             "type" : "square",
             "x" : 2670,
-            "y" : 550,
-            "rotation": 0 
+            "y" : 550
         },
         
         {
             "type" : "sawblade",
             "x" : 2730,
-            "y" : 575,
-            "rotation": 0
+            "y" : 575
         },
         {
             "type" : "pedestal",
-            "x" : 2850,
+            "x" : 2860,
             "y" : 495
         },
         {
             "type" : "square",
-            "x" : 2848,
-            "y" : 490,
-            "rotation": 0 
+            "x" : 2858,
+            "y" : 490
         },
         {
             "type" : "sawblade",
             "x" : 2910,
-            "y" : 575,
-            "rotation": 0
+            "y" : 575
         },
         {
             "type" : "pedestal",
-            "x" : 3040,
+            "x" : 3060,
             "y" : 495
         },
         {
             "type" : "square",
-            "x" : 3038,
-            "y" : 440,
-            "rotation": 0 
+            "x" : 3058,
+            "y" : 440
         },
         {
             "type" : "spike",
             "x" : 3840,
-            "y" : 560,
-            "rotation": 0 
+            "y" : 560
         },
         {   
             "type" : "crushers",
@@ -146,10 +129,19 @@
             "y" : 550
         },
         {
+            "type" : "spike",
+            "x" : 4600,
+            "y" : 510
+        },
+        {
             "type" : "sawblade",
             "x" : 4850,
-            "y" : 570,
-            "rotation": 0
+            "y" : 570
+        },
+        {
+            "type" : "spike",
+            "x" : 5300,
+            "y" : 510
         },
         {   
             "type" : "crushers",
@@ -159,41 +151,37 @@
         {
             "type" : "sawblade",
             "x" : 5650,
-            "y" : 570,
-            "rotation": 0
+            "y" : 570
         },
         {
             "type" : "sawblade",
             "x" : 5750,
-            "y" : 570,
-            "rotation": 0
+            "y" : 570
         },
         {
             "type" : "sawblade",
             "x" : 5850,
-            "y" : 570,
-            "rotation": 0
+            "y" : 570
         },
         {
             "type" : "sawblade",
             "x" : 5950,
-            "y" : 570,
-            "rotation": 0
+            "y" : 570
         },
         {
             "type" : "rectangle",
             "x" : 5650,
-            "y" : 450
+            "y" : 455
         },
         {
             "type" : "rectangle",
             "x" : 5850,
-            "y" : 425
+            "y" : 420
         },
         {
             "type" : "rectangle",
             "x" : 6050,
-            "y" : 400
+            "y" : 395
         },
         {   
             "type" : "crushers",

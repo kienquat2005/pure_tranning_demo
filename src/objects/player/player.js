@@ -3,12 +3,12 @@ import { Container, Sprite, Texture } from "pixi.js";
 export class Player extends Container {
     constructor() {
         super("player");
-        this.jumbVelocity = 10;
-        this.gravity = 6 ;
+        this.jumbVelocity = 12;
+        this.gravity = 7 ;
         this.isJumping = false;
         this.isFalling = true;
         this.degree = 0;
-        this.rotationSpeed = 0.052;
+        this.rotationSpeed = 0.070;
         this.isdie = false;
         this._initSprite();
         this.registerEvents();
@@ -18,8 +18,8 @@ export class Player extends Container {
         this.sprite = new Sprite(Texture.from("/assets/images/player.png"));
         this.sprite.anchor.set(0.5);
         this.addChild(this.sprite);
-        this.width = 2;
-        this.height = 2;
+        this.width = 1.7;
+        this.height = 1.7;
         this.pivot.set(0.5);
 
     }
@@ -36,7 +36,7 @@ export class Player extends Container {
         setTimeout(() => {
             this.isJumping = false;
             this.isFalling = true;
-        }, 370)
+        }, 350)
     }
 
     fall() {
@@ -45,6 +45,9 @@ export class Player extends Container {
 
     registerEvents() {
         document.addEventListener("keydown", (e) => {
+            if(this.isdie){
+                return;
+            }
             if(e.code === "Space") {
                 this.jumb();
             }
