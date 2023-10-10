@@ -3,142 +3,124 @@
         {
             "type" : "platform",
             "x" : 0,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 644,
-            "y" : 595
-        },
-        {
-            "type" : "square",
-            "x" : 800,
-            "y" : 520,
-            "rotation": 0 
-        },
-        {
-            "type" : "square",
-            "x" : 850,
-            "y" : 520,
-            "rotation": 0 
-        },
-        {
-            "type" : "square",
-            "x" : 900,
-            "y" : 520,
-            "rotation": 0 
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 1288,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 1932,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 2576,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 3220,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 3864,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 4506,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 5152,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 5796,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 6396,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "platform",
             "x" : 6896,
-            "y" : 595
+            "y" : 600
         },
         {
             "type" : "spike",
             "x" : 1000,
-            "y" : 525,
+            "y" : 560,
             "rotation": 0
         },
         {
             "type" : "spike",
             "x" : 1844,
-            "y" : 525,
+            "y" : 560,
             "rotation": 0   
         } ,
 
         {
             "type" : "spike",
             "x" : 1876,
-            "y" : 525,
+            "y" : 560,
             "rotation": 0 
         },
 
         {
             "type" : "spike",
-            "x" : 2676,
-            "y" : 525,
+            "x" : 2625,
+            "y" : 560,
             "rotation": 0 
         },
         {
             "type" : "spike",
-            "x" : 2708,
-            "y" : 525,
+            "x" : 2668,
+            "y" : 560,
             "rotation": 0 
         },
         
         {
             "type" : "square",
-            "x" : 2750,
-            "y" : 520,
+            "x" : 2670,
+            "y" : 550,
             "rotation": 0 
         },
         
         {
             "type" : "sawblade",
-            "x" : 2830,
-            "y" : 525,
+            "x" : 2730,
+            "y" : 575,
             "rotation": 0
         },
         {
             "type" : "pedestal",
-            "x" : 2900,
+            "x" : 2850,
             "y" : 495
         },
         {
             "type" : "square",
-            "x" : 2900,
-            "y" : 470,
+            "x" : 2848,
+            "y" : 490,
             "rotation": 0 
         },
         {
             "type" : "sawblade",
-            "x" : 2970,
-            "y" : 525,
+            "x" : 2910,
+            "y" : 575,
             "rotation": 0
         },
         {
@@ -148,95 +130,95 @@
         },
         {
             "type" : "square",
-            "x" : 3040,
-            "y" : 420,
+            "x" : 3038,
+            "y" : 440,
             "rotation": 0 
         },
         {
             "type" : "spike",
             "x" : 3840,
-            "y" : 525,
+            "y" : 560,
             "rotation": 0 
         },
         {   
             "type" : "crushers",
             "x" : 4200,
-            "y" : 495
+            "y" : 550
         },
         {
             "type" : "sawblade",
-            "x" : 4900,
-            "y" : 525,
+            "x" : 4850,
+            "y" : 570,
             "rotation": 0
         },
         {   
             "type" : "crushers",
             "x" : 4960,
-            "y" : 495
+            "y" : 550
         },
         {
             "type" : "sawblade",
             "x" : 5650,
-            "y" : 525,
+            "y" : 570,
             "rotation": 0
         },
         {
             "type" : "sawblade",
             "x" : 5750,
-            "y" : 525,
+            "y" : 570,
             "rotation": 0
         },
         {
             "type" : "sawblade",
             "x" : 5850,
-            "y" : 525,
+            "y" : 570,
             "rotation": 0
         },
         {
             "type" : "sawblade",
             "x" : 5950,
-            "y" : 525,
+            "y" : 570,
             "rotation": 0
         },
         {
             "type" : "rectangle",
             "x" : 5650,
-            "y" : 425
+            "y" : 450
         },
         {
             "type" : "rectangle",
             "x" : 5850,
-            "y" : 400
+            "y" : 425
         },
         {
             "type" : "rectangle",
             "x" : 6050,
-            "y" : 375
+            "y" : 400
         },
         {   
             "type" : "crushers",
             "x" : 6150,
-            "y" : 495
+            "y" : 550
         },
         {   
             "type" : "crushers",
             "x" : 6150,
-            "y" : 460
+            "y" : 525
         },
         {   
             "type" : "crushers",
             "x" : 6750,
-            "y" : 495
+            "y" : 550
         },
         {   
             "type" : "crushers",
             "x" : 6750,
-            "y" : 460
+            "y" : 525
         },
         {   
             "type" : "destination",
             "x" : 7350,
-            "y" : 360
+            "y" : 400
         }
     ]
 }

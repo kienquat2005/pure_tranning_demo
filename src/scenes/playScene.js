@@ -1,5 +1,4 @@
 import { Container } from "pixi.js";
-import { GameConstant } from "../gameconstant";
 import { BackGround } from "../objects/backGround/background";
 import { Map } from "../objects/maps/map";
 import { Player } from "../objects/player/player";
@@ -11,7 +10,6 @@ export class PlayScene extends Container{
     this._initBackGround();
     this._initMap();
     this._initPlayer();
-    this.timeout = 1000;
   }
 
   _initBackGround(){
@@ -25,14 +23,11 @@ export class PlayScene extends Container{
     this.addChild(this.map);
   }
 
-  _initBase(){
-    this.base = new Base();
-    this.addChild(this.base);
-  }
-
   _initPlayer(){
     this.player = new Player();
     this.addChild(this.player);
+    this.player.x = 300
+    this.player.y = 500;
   }
 
   playerColliderWithSpike(){
@@ -41,70 +36,60 @@ export class PlayScene extends Container{
     }
     this.map.spikes.forEach((spike)=>{
       if(CollisionDetector.detectCollision(this.player,spike)){
-        this.player.onDie();
+        this.player.ondie();
         this.map.mapVelocity = 0;
       }
     })
   }
 
   playerColliderWithPlatform(){
-    this.map.platForm.forEach((platform)=>{
-      if(CollisionDetector.detectCollision(this.player,platform)){
-        this.player.graviti = 0;
 
-        // this.player.isCollideWithPlatform = true;
-      }
-    })
+    if(this.player.y >= 575) {
+      this.player.isFalling = false;
+    } else {
+      this.player.isFalling = true;
+    }
   }
 
   playerColliderWithSquare(){
     this.map.squares.forEach((square)=>{
-      if(CollisionDetector.detectCollision(this.player.player,square)){
-        if(this.player.player.y >= square.y - square.height / 2 ) {
-            this.map.mapVelocity = 0;
-        }
-        else { 
-          this.player.graviti = 0;
+      if(CollisionDetector.detectCollision(this.player,square)){
+        if(this.player.y <= square.y) {
           this.player.isFalling = false;
+        }else {
+          this.map.mapVelocity = 0;
         }
-      } else {
-        this.player.graviti = 6;
-
-      }
-
-
-
-    })
-  }
-
-  playerColliderWithSawblade(){
-    this.map.sawblade.forEach((sawblade)=>{
-      if(CollisionDetector.detectCollision(this.player,sawblade)){
-        this.map.mapVelocity = 0;
-      }
-    })
+      } 
+    });
   }
 
   playerColliderWithCrusher(){
     this.map.crushers.forEach((crusher)=>{
       if(CollisionDetector.detectCollision(this.player,crusher)){
-        if(this.player.player.y >= crusher.y ){
-          this.map.mapVelocity = 0;
+        if(this.player.y <= crusher.y){
+          this.player.isFalling = false;
         }
         else{
-          this.player.player.y -= this.player.jumpVelocity;
+          this.map.mapVelocity = 0;
         }
       }
     })
   }
 
-  playerColliderWithRectangle(){
+  playerColliderWithRectTangle(){
     this.map.rectangles.forEach((rectangle)=>{
       if(CollisionDetector.detectCollision(this.player,rectangle)){
-
+        if(this.player.y <= rectangle.y){
+          this.player.isFalling = false;
+        }
+        else{
+          this.map.mapVelocity = 0
+        }
       }
     })
   }
+
+ 
   reloadGame(){
     location.reload()
   }
@@ -112,12 +97,12 @@ export class PlayScene extends Container{
   update(){
     this.map.update();
     this.playerColliderWithPlatform();
-    // this.playerColliderWithCrusher();
     // this.playerColliderWithSpike();
     // this.playerColliderWithSquare();
-    // this.playerColliderWithSawblade();
-    // this.playerColliderWithCrusher();
+    this.playerColliderWithCrusher()
+    this.playerColliderWithRectTangle();
     this.player.update();
+
 
   }
   

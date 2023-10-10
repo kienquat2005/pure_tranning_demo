@@ -4,7 +4,7 @@ import mapData from "/assets/json/mapData.json";
 export class Map extends Container {
     constructor() {
         super();
-        this.platForm = [];
+        this.platForms = [];
         this.spikes = [];
         this.squares = [];
         this.sawblade = [];
@@ -45,60 +45,68 @@ export class Map extends Container {
     }
 
     _createPlatForm(object) {
+        let platForm = new Container();
         let sprite = new Sprite(Texture.from("/assets/images/platforms.png"));
-        this.addChild(sprite);
-        this.platForm.push(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        sprite.anchor.set(0.5)
-        return sprite;
+        platForm.addChild(sprite);
+        this.addChild(platForm)
+        this.platForms.push(platForm);
+        platForm.x = object.x;
+        platForm.y = object.y;
+        platForm.pivot.set(0.5)
+        return platForm;
     }
 
     _createSpike(object){
+        let spike = new Container();
         let sprite = new Sprite(Texture.from("/assets/images/spike-16-27-56.png"));
-        this.addChild(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        this.spikes.push(sprite);
-        sprite.anchor.set(0.5);
-        sprite.scale.set(1.3,1.3)
-        sprite.rotation  = Math.PI/2
-        return sprite;
+        spike.addChild(sprite);
+        this.addChild(spike)
+        spike.x = object.x;
+        spike.y = object.y;
+        this.spikes.push(spike);
+        spike.pivot.set(0.5);
+        sprite.scale.set(1.5,1.5)
+        spike.rotation = Math.PI/2
+        return spike;
     }
 
     _createSquare(object){
+        let square = new Container();
         let sprite = new Sprite(Texture.from("/assets/images/square.png"));
-        this.addChild(sprite);
-        this.squares.push(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        sprite.width = 55;
-        sprite.height = 50;
-        sprite.anchor.set(0.5)
-        return sprite;
+        square.addChild(sprite);
+        this.addChild(square);
+        this.squares.push(square);
+        square.x = object.x;
+        square.y = object.y;
+        square.pivot.set(0.5);
+        square.scale.set(0.65)
+        return square;
     }
     
     _createPedestal(object){
+        let pedestal = new Container();
         let sprite = new Sprite(Texture.from("/assets/images/pedestal.png"));
-        this.addChild(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        this.pedestal.push(sprite);
-        sprite.width = 50;
-        sprite.height = 100;
-        sprite.anchor.set(0.5);
-        return sprite;
+        pedestal.addChild(sprite);
+        this.addChild(pedestal);
+        pedestal.x = object.x;
+        pedestal.y = object.y;
+        this.pedestal.push(pedestal);
+        pedestal.scale.set(0.7);
+        pedestal.pivot.set(0.5);
+        return pedestal;
     }
 
     _createSawblade(object){
+        let sawBlade = new Container();
         let sprite = new Sprite(Texture.from("/assets/images/sawblade.png"));
-        this.addChild(sprite);
-        this.sawblade.push(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        sprite.scale.y = 1.2;
-        sprite.anchor.set(0.5)
-        return sprite;
+        sawBlade.addChild(sprite);
+        this.addChild(sawBlade);
+        this.sawblade.push(sawBlade);
+        sawBlade.x = object.x;
+        sawBlade.y = object.y;
+        sawBlade.scale.y = 1.2;
+        sawBlade.pivot.set(0.5);
+        return sawBlade;
     }
 
     _createSawblade2(object){
@@ -110,29 +118,38 @@ export class Map extends Container {
     }
 
     _createRectangle(object){
+        let recTangLe = new Container();
         let sprite = new Sprite(Texture.from("/assets/images/rectangle.png"));
-        this.addChild(sprite);
-        this.rectangles.push(sprite)
-        sprite.x = object.x;
-        sprite.y = object.y;
-        return sprite;
+        recTangLe.addChild(sprite);
+        this.addChild(recTangLe);
+        this.rectangles.push(recTangLe)
+        recTangLe.x = object.x;
+        recTangLe.y = object.y;
+        recTangLe.pivot.set(0.5)
+        return recTangLe;
     }
 
     _createCrushers(object){
+        let cruSher = new Container()
         let sprite = new Sprite(Texture.from("/assets/images/crusher.png"));
-        this.addChild(sprite);
-        this.crushers.push(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        sprite.scale.y = 0.6;
-        return sprite;
+        cruSher.addChild(sprite)
+        this.addChild(cruSher);
+        this.crushers.push(cruSher);
+        cruSher.x = object.x;
+        cruSher.y = object.y;
+        cruSher.scale.y = 0.6;
+        cruSher.pivot.set(0.5);
+        return cruSher;
     }
     _createDestination(object){
+        let destination = new Container()
         let sprite = new Sprite(Texture.from("/assets/images/destination.png"));
-        this.addChild(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        return sprite;
+        destination.addChild(sprite);
+        this.addChild(destination);
+        destination.x = object.x;
+        destination.y = object.y;
+        destination.pivot.set(0.5);
+        return destination;
     }
 
     update(){
