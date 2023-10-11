@@ -26,8 +26,8 @@ export class PlayScene extends Container{
   _initPlayer(){
     this.player = new Player();
     this.addChild(this.player);
-    this.player.x = 300
-    this.player.y = 510;
+    // this.player.x = 300
+    // this.player.y = 525;
   }
 
   playerColliderWithSpike(){
@@ -35,26 +35,27 @@ export class PlayScene extends Container{
       return;
     }
     this.map.spikes.forEach((spike)=>{
-      if(CollisionDetector.detectCollision(this.player,spike)){
+      if(CollisionDetector.detectCollision(this.player.sprite,spike)){
         this.player.ondie();
         this.map.mapVelocity = 0;
+        this.reloadGame();
       }
     })
   }
+  
 
   playerColliderWithPlatform(){
-
-    if(this.player.y >= 575) {
+    if(this.player.sprite.y >= 575) {
       this.player.isFalling = false;
     } else {
-      this.player.isFalling = true;
+      this.player.fall();
     }
   }
 
   playerColliderWithSquare(){
     this.map.squares.forEach((square)=>{
-      if(CollisionDetector.detectCollision(this.player,square)){
-        if(this.player.y <= square.y) {
+      if(CollisionDetector.detectCollision(this.player.sprite,square)){
+        if(this.player.sprite.y <= square.y) {
           this.player.isFalling = false;
         }else {
           this.map.mapVelocity = 0;
@@ -66,7 +67,7 @@ export class PlayScene extends Container{
 
   playerColliderWithSawBlade(){
     this,this.map.sawblade.forEach((sawblade)=>{
-      if(CollisionDetector.detectCollision(this.player,sawblade)){
+      if(CollisionDetector.detectCollision(this.player.sprite,sawblade)){
         this.map.mapVelocity = 0;
         this.player.ondie();
       }
@@ -75,8 +76,8 @@ export class PlayScene extends Container{
 
   playerColliderWithCrusher(){
     this.map.crushers.forEach((crusher)=>{
-      if(CollisionDetector.detectCollision(this.player,crusher)){
-        if(this.player.y <= crusher.y){
+      if(CollisionDetector.detectCollision(this.player.sprite,crusher)){
+        if(this.player.sprite.y <= crusher.y + crusher.height / 2 ){
           this.player.isFalling = false;
         }
         else{
@@ -89,8 +90,8 @@ export class PlayScene extends Container{
 
   playerColliderWithRectTangle(){
     this.map.rectangles.forEach((rectangle)=>{
-      if(CollisionDetector.detectCollision(this.player,rectangle)){
-        if(this.player.y <= rectangle.y ){
+      if(CollisionDetector.detectCollision(this.player.sprite,rectangle)){
+        if(this.player.sprite.y <= rectangle.y + rectangle.height/2 + this.player.height/2){
           this.player.isFalling = false;
         }
         else{
@@ -108,10 +109,10 @@ export class PlayScene extends Container{
 
   update(){
     this.map.update();
-    this.playerColliderWithPlatform();
+    this.playerColliderWithPlatform(); 
     this.playerColliderWithSpike();
     this.playerColliderWithSquare();
-    this.playerColliderWithSawBlade();
+    this.playerColliderWithSawBlade(); 
     this.playerColliderWithCrusher()
     this.playerColliderWithRectTangle();
     this.player.update();
