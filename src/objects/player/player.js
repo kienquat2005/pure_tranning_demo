@@ -1,4 +1,6 @@
 import { Container, Sprite, Texture } from "pixi.js";
+import { Effect } from "../../effect/effec";
+import { EffectPlayerDie } from "../../effect/effectPlayerDie";
 
 export class Player extends Container {
     constructor() {
@@ -11,6 +13,8 @@ export class Player extends Container {
         this.rotationSpeed = 0.18;
         this.isdie = false;
         this._initSprite();
+        this._initEffectPlayer();
+        this._initEffectPlayerDie();
         this.registerEvents();
     }
 
@@ -25,8 +29,27 @@ export class Player extends Container {
         this.pivot.set(0.5);
 
     }
+
+    _initEffectPlayer(){
+        this.effect = new Effect()
+        this.addChild(this.effect);
+        this.effect.x = this.sprite.x - 25;
+        this.effect.y = this.sprite.y
+        this.effect.play();
+    }
+
+    _initEffectPlayerDie(){
+        this.effectEffectPlayerDie = new EffectPlayerDie()
+        this.addChild(this.effectEffectPlayerDie);
+        this.effectEffectPlayerDie.x = this.sprite.x;
+        this.effectEffectPlayerDie.y = this.sprite.y; 
+    }
+
     ondie(){
         this.isdie = true;
+        this.sprite.alpha = 0;
+        this.effect.stop();
+        this.effectEffectPlayerDie.play();
     }
 
     jumb(){
@@ -41,32 +64,48 @@ export class Player extends Container {
         }
     }
     
+    rotation(){
+        this.sprite.rotation += this.rotationSpeed;
+    }
+    
     updatePlayer(){
         if(this.isJumping){
             this.sprite.y -= this.jumbVelocity;
             this.jumbVelocity -= this.gravity;
-            this.sprite.rotation += this.rotationSpeed;
+            this.effect.x = this.sprite.x - 25;
+            this.effect.y = this.sprite.y;
+            this.effectEffectPlayerDie.x = this.sprite.x;
+            this.effectEffectPlayerDie.y = this.sprite.y;
+            this.effect.stop();
+            this.rotation();
             if(this.jumbVelocity <=0){
                 this.isJumping = false;
                 this.isFalling = true;
+
             }
         }
         if(this.isFalling){
             this.sprite.y += this.jumbVelocity;
             this.jumbVelocity += this.gravity;
+            this.effect.x = this.sprite.x - 25;
+            this.effect.y = this.sprite.y
+            this.effectEffectPlayerDie.x = this.sprite.x;
+            this.effectEffectPlayerDie.y = this.sprite.y;
             this.sprite.rotation = this.degreesToRadians(this.degree);
+            this.effect.play();
         }
 
     }
 
 
     registerEvents() {
+        
         document.addEventListener("keydown", (e) => {
-            if(this.isdie){
+            if(this.isFalling || this.isJumping || this.isdie){
                 return;
             }
-            this.degree += 180;
             if(e.code === "Space") {
+                this.degree += 180;
                 this.jumb();
             }
         })
@@ -81,6 +120,9 @@ export class Player extends Container {
       }
 
     update() {
+        if(this.isdie){
+            return;
+        }
         this.updatePlayer();
     }
 }

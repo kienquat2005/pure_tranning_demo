@@ -1,4 +1,6 @@
+import tween, { Tween } from "@tweenjs/tween.js";
 import { Container, Sprite, Texture } from "pixi.js";
+import { Game } from "../../game";
 import mapData from "/assets/json/mapData.json";
 
 export class Map extends Container {
@@ -11,6 +13,8 @@ export class Map extends Container {
         this.pedestal = [];
         this.crushers = [];
         this.rectangles = [];
+        this.smiles = [];
+        this.pillars = [];
         this.mapVelocity = 6.5;
         this._initMap();
     }
@@ -40,6 +44,12 @@ export class Map extends Container {
             }
             if(object.type ==="destination") {
                 this._createDestination(object);
+            }
+            if(object.type ==="smile") {
+                this._createSmile(object)
+            }
+            if(object.type ==="pillar"){
+                this._createPillar(object);
             }
         });
     }
@@ -79,7 +89,8 @@ export class Map extends Container {
         square.x = object.x;
         square.y = object.y;
         square.pivot.set(0.5);
-        square.scale.set(0.65)
+        square.scale.set(0.65);
+        square.name = "square";
         return square;
     }
     
@@ -150,6 +161,42 @@ export class Map extends Container {
         destination.y = object.y;
         destination.pivot.set(0.5);
         return destination;
+    }
+
+    _createSmile(object){
+        let smile = new Container()
+        let sprite = new Sprite(Texture.from("/assets/images/love.png"));
+        sprite.anchor.set(0.5);
+        smile.addChild(sprite);
+        this.addChild(smile);
+        this.smiles.push(smile);
+        smile.x = object.x;
+        smile.y = object.y;
+        smile.pivot.set(0.5);
+        smile.width = 0.5;
+        smile.height = 0.5;
+        this.smiles.forEach(smiLe =>{
+            new Tween(smiLe.scale)
+            .to({x:0.2 , y: 0.2},300)
+            .yoyo(true)
+            .repeat(Infinity)
+            .start(Game.currentTime);
+        })
+        return smile;
+    }
+
+    _createPillar(object){
+        let pillar = new Container()
+        let sprite = new Sprite(Texture.from("/assets/images/pillar.png"));
+        pillar.addChild(sprite);
+        this.addChild(pillar);
+        this.pillars.push(pillar);
+        pillar.x = object.x;
+        pillar.y = object.y;
+        pillar.pivot.set(0.5);
+        pillar.width = 1.5;
+        pillar.height = 1.5;
+        return pillar;
     }
 
     update(){

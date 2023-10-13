@@ -2,7 +2,7 @@ import { Container } from "pixi.js";
 import { BackGround } from "../objects/backGround/background";
 import { Map } from "../objects/maps/map";
 import { Player } from "../objects/player/player";
-import { CollisionDetector } from "../physics/collisionDetector/collisionDetector";
+import { CollideEvents, CollisionDetector } from "../physics/collisionDetector/collisionDetector";
 
 export class PlayScene extends Container{
   constructor(){
@@ -10,6 +10,8 @@ export class PlayScene extends Container{
     this._initBackGround();
     this._initMap();
     this._initPlayer();
+    this.isColl = false;
+    this.enable = false;
   }
 
   _initBackGround(){
@@ -35,7 +37,7 @@ export class PlayScene extends Container{
       return;
     }
     this.map.spikes.forEach((spike)=>{
-      if(CollisionDetector.detectCollision(this.player.sprite,spike)){
+      if(CollisionDetector.detectCollision(this.player.sprite ,spike)){
         this.player.ondie();
         this.map.mapVelocity = 0;
         this.reloadGame();
@@ -45,14 +47,18 @@ export class PlayScene extends Container{
   
 
   playerColliderWithPlatform(){
+    this.enable = false;
     if(this.player.sprite.y >= 575) {
-      this.player.isFalling = false;
+      this.player.isFalling = false; 
     } else {
       this.player.fall();
     }
   }
 
   playerColliderWithSquare(){
+    if(this.player.isdie){
+      return;
+    }
     this.map.squares.forEach((square)=>{
       if(CollisionDetector.detectCollision(this.player.sprite,square)){
         if(this.player.sprite.y <= square.y) {
@@ -60,51 +66,67 @@ export class PlayScene extends Container{
         }else {
           this.map.mapVelocity = 0;
           this.player.ondie();
+          this.reloadGame();
         }
-      } 
+      }
     });
+
+    
   }
 
   playerColliderWithSawBlade(){
+    if(this.player.isdie){
+      return; 
+    }
     this,this.map.sawblade.forEach((sawblade)=>{
       if(CollisionDetector.detectCollision(this.player.sprite,sawblade)){
         this.map.mapVelocity = 0;
         this.player.ondie();
+        this.reloadGame(); 
       }
     })
   }
 
   playerColliderWithCrusher(){
+    if(this.player.isdie){
+      return;
+    }
     this.map.crushers.forEach((crusher)=>{
       if(CollisionDetector.detectCollision(this.player.sprite,crusher)){
-        if(this.player.sprite.y <= crusher.y + crusher.height / 2 ){
+        if(this.player.sprite.y <= crusher.y){
           this.player.isFalling = false;
         }
         else{
           this.map.mapVelocity = 0;
-          this.player.ondie()
+          this.player.ondie();
+          this.reloadGame();
         }
       }
-    })
+    });
   }
 
   playerColliderWithRectTangle(){
+    if(this.player.isdie){
+      return;
+    }
     this.map.rectangles.forEach((rectangle)=>{
       if(CollisionDetector.detectCollision(this.player.sprite,rectangle)){
-        if(this.player.sprite.y <= rectangle.y + rectangle.height/2 + this.player.height/2){
+        if(this.player.sprite.y <= rectangle.y){
           this.player.isFalling = false;
         }
         else{
           this.map.mapVelocity = 0
-          // this.player.on()
+          this.player.ondie();
+          this.reloadGame();
         }
       }
     })
   }
 
- 
   reloadGame(){
-    location.reload()
+    setTimeout(() => {
+      location.reload()
+    }, 2000);
   }
 
   update(){
@@ -116,8 +138,6 @@ export class PlayScene extends Container{
     this.playerColliderWithCrusher()
     this.playerColliderWithRectTangle();
     this.player.update();
-
-
   }
   
   pause(){

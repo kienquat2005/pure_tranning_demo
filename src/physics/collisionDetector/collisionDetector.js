@@ -1,5 +1,10 @@
 import { Container } from "pixi.js";
 
+export const CollideEvents = Object.freeze({
+  onCollide : "collide:onCollide",
+  onEndCollide : "collide:endCollide"
+})
+
 export class CollisionDetector extends Container{
    static detectCollision(obj1, obj2,){
     const object1Bounds = obj1.getBounds();
@@ -12,7 +17,6 @@ export class CollisionDetector extends Container{
     ) {
       return true;
     }
-  
-    return false;
+      return false;
   }
 }
