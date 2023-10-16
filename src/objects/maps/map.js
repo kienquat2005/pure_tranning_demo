@@ -15,7 +15,7 @@ export class Map extends Container {
         this.rectangles = [];
         this.smiles = [];
         this.pillars = [];
-        this.mapVelocity = 6.5;
+        this.mapVelocity = 7;
         this._initMap();
     }
 
