@@ -1,6 +1,9 @@
 import { Container, Sprite, Texture } from "pixi.js";
 import { Effect } from "../../effect/effec";
 import { EffectPlayerDie } from "../../effect/effectPlayerDie";
+import { Collider } from "../../physics/aabb/collider";
+import { CollisionTag } from "../../physics/aabb/collisionTag";
+import { CollisionEvent } from "../../physics/aabb/collissionEvent";
 
 export class Player extends Container {
     constructor() {
@@ -26,7 +29,13 @@ export class Player extends Container {
         this.sprite.height = 50;
         this.sprite.x = 250
         this.sprite.y = 580;
-        this.pivot.set(0.5);
+
+        
+
+
+    }
+
+    onCollider(){
 
     }
 

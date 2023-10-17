@@ -1,5 +1,6 @@
 export const CollisionTag = Object.freeze({
-  Default     : "default",
+  Default : "default",
+  Player: "player",
   Spike: "spike",
   Square: "square",
   SawBlade: "sawblade",

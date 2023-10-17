@@ -2,7 +2,6 @@ import { Container } from "pixi.js";
 import { BackGround } from "../objects/backGround/background";
 import { Map } from "../objects/maps/map";
 import { Player } from "../objects/player/player";
-import { CollideEvents, CollisionDetector } from "../physics/collisionDetector/collisionDetector";
 
 export class PlayScene extends Container{
   constructor(){
@@ -32,19 +31,6 @@ export class PlayScene extends Container{
     // this.player.y = 525;
   }
 
-  playerColliderWithSpike(){
-    if(this.player.isdie){
-      return;
-    }
-    this.map.spikes.forEach((spike)=>{
-      if(CollisionDetector.detectCollision(this.player.sprite ,spike)){
-        this.player.ondie();
-        this.map.mapVelocity = 0;
-        this.reloadGame();
-      }
-    })
-  }
-  
 
   playerColliderWithPlatform(){
     this.enable = false;
@@ -55,88 +41,16 @@ export class PlayScene extends Container{
     }
   }
 
-  playerColliderWithSquare(){
-    if(this.player.isdie){
-      return;
-    }
-    this.map.squares.forEach((square)=>{
-      if(CollisionDetector.detectCollision(this.player.sprite,square)){
-        if(this.player.sprite.y <= square.y) {
-          this.player.isFalling = false;
-        }else {
-          this.map.mapVelocity = 0;
-          this.player.ondie();
-          this.reloadGame();
-        }
-      }
-    });
-
-    
-  }
-
-  playerColliderWithSawBlade(){
-    if(this.player.isdie){
-      return; 
-    }
-    this,this.map.sawblade.forEach((sawblade)=>{
-      if(CollisionDetector.detectCollision(this.player.sprite,sawblade)){
-        this.map.mapVelocity = 0;
-        this.player.ondie();
-        this.reloadGame(); 
-      }
-    })
-  }
-
-  playerColliderWithCrusher(){
-    if(this.player.isdie){
-      return;
-    }
-    this.map.crushers.forEach((crusher)=>{
-      if(CollisionDetector.detectCollision(this.player.sprite,crusher)){
-        if(this.player.sprite.y <= crusher.y){
-          this.player.isFalling = false;
-        }
-        else{
-          this.map.mapVelocity = 0;
-          this.player.ondie();
-          this.reloadGame();
-        }
-      }
-    });
-  }
-
-  playerColliderWithRectTangle(){
-    if(this.player.isdie){
-      return;
-    }
-    this.map.rectangles.forEach((rectangle)=>{
-      if(CollisionDetector.detectCollision(this.player.sprite,rectangle)){
-        if(this.player.sprite.y <= rectangle.y){
-          this.player.isFalling = false;
-        }
-        else{
-          this.map.mapVelocity = 0
-          this.player.ondie();
-          this.reloadGame();
-        }
-      }
-    })
-  }
-
-  reloadGame(){
-    setTimeout(() => {
-      location.reload()
-    }, 2000);
-  }
+  
+  // reloadGame(){
+  //   setTimeout(() => {
+  //     location.reload()
+  //   }, 2000);
+  // }
 
   update(){
     this.map.update();
     this.playerColliderWithPlatform(); 
-    this.playerColliderWithSpike();
-    this.playerColliderWithSquare();
-    this.playerColliderWithSawBlade(); 
-    this.playerColliderWithCrusher()
-    this.playerColliderWithRectTangle();
     this.player.update();
   }
   

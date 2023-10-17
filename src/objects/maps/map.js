@@ -1,6 +1,16 @@
 import tween, { Tween } from "@tweenjs/tween.js";
 import { Container, Sprite, Texture } from "pixi.js";
 import { Game } from "../../game";
+import { CruSher } from "./cruSher/curSher";
+import { Destination } from "./desTination/destination";
+import { Heart } from "./heart/heart";
+import { Pedestal } from "./pedestal/pedestal";
+import { Pillar } from "./pillar/pillar";
+import { PlatForm } from "./platForm/platFrom";
+import { RecTangLe } from "./recTangLe/retangLe";
+import { SawBlade } from "./sawBlade/sawBlade";
+import { Spike } from "./spike/spike";
+import { Square } from "./square/square";
 import mapData from "/assets/json/mapData.json";
 
 export class Map extends Container {
@@ -13,7 +23,7 @@ export class Map extends Container {
         this.pedestal = [];
         this.crushers = [];
         this.rectangles = [];
-        this.smiles = [];
+        this.hearts = [];
         this.pillars = [];
         this.mapVelocity = 7;
         this._initMap();
@@ -45,8 +55,8 @@ export class Map extends Container {
             if(object.type ==="destination") {
                 this._createDestination(object);
             }
-            if(object.type ==="smile") {
-                this._createSmile(object)
+            if(object.type ==="heart") {
+                this._createHeart(object)
             }
             if(object.type ==="pillar"){
                 this._createPillar(object);
@@ -55,10 +65,8 @@ export class Map extends Container {
     }
 
     _createPlatForm(object) {
-        let platForm = new Container();
-        let sprite = new Sprite(Texture.from("/assets/images/platforms.png"));
-        platForm.addChild(sprite);
-        this.addChild(platForm)
+        let platForm = new PlatForm()
+        this.addChild(platForm);
         this.platForms.push(platForm);
         platForm.x = object.x;
         platForm.y = object.y;
@@ -67,37 +75,29 @@ export class Map extends Container {
     }
 
     _createSpike(object){
-        let spike = new Container();
-        let sprite = new Sprite(Texture.from("/assets/images/spike-16-27-56.png"));
-        spike.addChild(sprite);
-        this.addChild(spike)
+        let spike = new Spike();
         spike.x = object.x;
         spike.y = object.y;
-        this.spikes.push(spike);
+        this.addChild(spike)
         spike.pivot.set(0.5);
-        sprite.scale.set(1.5,1.5)
+        spike.scale.set(1.5,1.5)
         spike.rotation = Math.PI/2
         return spike;
+
     }
 
     _createSquare(object){
-        let square = new Container();
-        let sprite = new Sprite(Texture.from("/assets/images/square.png"));
-        square.addChild(sprite);
-        this.addChild(square);
-        this.squares.push(square);
+        let square = new Square();
+        this.addChild(square)
         square.x = object.x;
         square.y = object.y;
         square.pivot.set(0.5);
         square.scale.set(0.65);
-        square.name = "square";
         return square;
     }
     
     _createPedestal(object){
-        let pedestal = new Container();
-        let sprite = new Sprite(Texture.from("/assets/images/pedestal.png"));
-        pedestal.addChild(sprite);
+        let pedestal = new Pedestal();
         this.addChild(pedestal);
         pedestal.x = object.x;
         pedestal.y = object.y;
@@ -108,9 +108,7 @@ export class Map extends Container {
     }
 
     _createSawblade(object){
-        let sawBlade = new Container();
-        let sprite = new Sprite(Texture.from("/assets/images/sawblade.png"));
-        sawBlade.addChild(sprite);
+        let sawBlade = new SawBlade();
         this.addChild(sawBlade);
         this.sawblade.push(sawBlade);
         sawBlade.x = object.x;
@@ -120,18 +118,8 @@ export class Map extends Container {
         return sawBlade;
     }
 
-    _createSawblade2(object){
-        let sprite = new Sprite(Texture.from("/assets/images/sawblade2.png"));
-        this.addChild(sprite);
-        sprite.x = object.x;
-        sprite.y = object.y;
-        return sprite;
-    }
-
     _createRectangle(object){
-        let recTangLe = new Container();
-        let sprite = new Sprite(Texture.from("/assets/images/rectangle.png"));
-        recTangLe.addChild(sprite);
+        let recTangLe = new RecTangLe();
         this.addChild(recTangLe);
         this.rectangles.push(recTangLe)
         recTangLe.x = object.x;
@@ -141,11 +129,8 @@ export class Map extends Container {
     }
 
     _createCrushers(object){
-        let cruSher = new Container()
-        let sprite = new Sprite(Texture.from("/assets/images/crusher.png"));
-        cruSher.addChild(sprite)
+        let cruSher = new CruSher()
         this.addChild(cruSher);
-        this.crushers.push(cruSher);
         cruSher.x = object.x;
         cruSher.y = object.y;
         cruSher.scale.y = 0.6;
@@ -153,9 +138,7 @@ export class Map extends Container {
         return cruSher;
     }
     _createDestination(object){
-        let destination = new Container()
-        let sprite = new Sprite(Texture.from("/assets/images/destination.png"));
-        destination.addChild(sprite);
+        let destination = new Destination()
         this.addChild(destination);
         destination.x = object.x;
         destination.y = object.y;
@@ -163,39 +146,34 @@ export class Map extends Container {
         return destination;
     }
 
-    _createSmile(object){
-        let smile = new Container()
-        let sprite = new Sprite(Texture.from("/assets/images/love.png"));
-        sprite.anchor.set(0.5);
-        smile.addChild(sprite);
-        this.addChild(smile);
-        this.smiles.push(smile);
-        smile.x = object.x;
-        smile.y = object.y;
-        smile.pivot.set(0.5);
-        smile.width = 0.5;
-        smile.height = 0.5;
-        this.smiles.forEach(smiLe =>{
-            new Tween(smiLe.scale)
+    _createHeart(object){
+        let heart = new Heart()
+        this.addChild(heart);
+        heart.x = object.x;
+        heart.y = object.y;
+        heart.pivot.set(0.5);
+        this.hearts.push(heart);
+        heart.width = 0.5;
+        heart.height = 0.5;
+        this.hearts.forEach(heart =>{
+            new Tween(heart.scale)
             .to({x:0.2 , y: 0.2},300)
             .yoyo(true)
             .repeat(Infinity)
             .start(Game.currentTime);
         })
-        return smile;
+        return heart;
     }
 
     _createPillar(object){
-        let pillar = new Container()
-        let sprite = new Sprite(Texture.from("/assets/images/pillar.png"));
-        pillar.addChild(sprite);
-        this.addChild(pillar);
+        let pillar = new Pillar();
         this.pillars.push(pillar);
         pillar.x = object.x;
         pillar.y = object.y;
         pillar.pivot.set(0.5);
         pillar.width = 1.5;
         pillar.height = 1.5;
+        this.addChild(pillar);
         return pillar;
     }
 
@@ -219,7 +197,6 @@ export class Map extends Container {
 
     resume(){
         this.isPaused = false;
-        // console.log(2)
     }
 
 }

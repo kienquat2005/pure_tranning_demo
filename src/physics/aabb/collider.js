@@ -1,5 +1,5 @@
 import { Point, Sprite, Texture } from "pixi.js";
-import { GameConstant } from "../../gameConstant";
+// import { GameConstant } from "../../gameConstant";
 import { CollisionDetector } from "./collisionDetector";
 import { CollisionTag } from "./collisionTag";
 
@@ -15,10 +15,10 @@ export class Collider extends Sprite {
     this.collideData = {};
     CollisionDetector.instance.add(this);
 
-    if (GameConstant.DEBUG_DRAW_COLLIDER) {
-      this.visible = true;
-      this.texture = Texture.WHITE;
-    }
+    // if (GameConstant.DEBUG_DRAW_COLLIDER) {
+    //   this.visible = true;
+    //   this.texture = Texture.WHITE;
+    // }
   }
 
   destroy() {

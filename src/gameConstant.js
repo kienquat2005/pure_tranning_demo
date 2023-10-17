@@ -3,5 +3,6 @@ export const GameConstant = Object.freeze({
   GAME_HEIGHT: 1280,
 
   BASE_VELOCITY :3,
+
  
 });
