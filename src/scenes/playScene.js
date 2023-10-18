@@ -27,8 +27,8 @@ export class PlayScene extends Container{
   _initPlayer(){
     this.player = new Player();
     this.addChild(this.player);
-    // this.player.x = 300
-    // this.player.y = 525;
+    this.player.x = 300
+    this.player.y = 525;
   }
 
 
