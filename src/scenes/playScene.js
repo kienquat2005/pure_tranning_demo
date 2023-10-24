@@ -63,7 +63,7 @@ export class PlayScene extends Container{
     if(this.player.sprite.y >= 575) {
       this.player.isFalling = false; 
     } else {
-      this.player.isFalling = true;
+      this.player.fall();
     }
   }
 
@@ -167,7 +167,7 @@ export class PlayScene extends Container{
   update(dt){
     this.map.update();
     this.playerColliderWithPlatform(); 
-    // this.playerColliderWithSpike();
+    this.playerColliderWithSpike();
     this.playerColliderWithSquare();
     this.playerColliderWithSawBlade(); 
     this.playerColliderWithCrusher()

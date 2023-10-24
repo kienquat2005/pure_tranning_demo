@@ -7,12 +7,12 @@ import { GameConstant } from "../../gameconstant";
 export class Player extends Container {
     constructor() {
         super();
-        this.jumbVelocity = GameConstant.JUMP_VELOCIRY;
-        this.gravity = 7.5;
+        this.jumbVelocity = 10;
+        this.gravity = 0.6;
         this.isJumping = false;
-        this.isFalling = true;
+        this.isFalling = false;
         this.degree = 0;
-        this.rotationSpeed = 0.2;
+        this.rotationSpeed = 0.186;
         this.isdie = false;
         this._initSprite();
         this._initEffect();
@@ -63,14 +63,13 @@ export class Player extends Container {
         if(this.isFalling){
             return;
         }
-        this.degree += 180;
-        this.isJumping = true;
-        setTimeout(() => {
-            this.isJumping = false;
-            this.isFalling = true;
-        }, 240 )
+        // if(!this.isJumping && !this.isFalling)
+        this.isJumping = true
+        this.jumbVelocity = 10;
+
     }
     fall(){
+        if(!this.isJumping)
             this.isFalling = true; 
     }
     
@@ -80,25 +79,29 @@ export class Player extends Container {
     
     updatePlayer(){
         if(this.isJumping){
-            this.sprite.y -= this.jumbVelocity; 
-            // this.effect.x = this.sprite.x - 25;
-            // this.effect.y = this.sprite.y;
+            this.sprite.y -= this.jumbVelocity;
+            this.jumbVelocity -= this.gravity;
+            this.effect.x = this.sprite.x - 25;
+            this.effect.y = this.sprite.y;
             this.effectEffectPlayerDie.x = this.sprite.x;
             this.effectEffectPlayerDie.y = this.sprite.y;
-            this.rotation();
+            this.sprite.rotation += this.rotationSpeed;
             this.effect.stop();
-        }
-            else{
-                this.sprite.rotation = this.degreesToRadians(this.degree)
+            if(this.jumbVelocity <=0){
+                this.isJumping = false;
+                this.isFalling = true;
             }
+        }
     
         if(this.isFalling){
-            this.sprite.y += this.gravity;
+            this.sprite.y += this.jumbVelocity;
+            this.jumbVelocity += this.gravity;
             this.effect.x = this.sprite.x - 25;
             this.effect.y = this.sprite.y
             this.effectEffectPlayerDie.x = this.sprite.x;
             this.effectEffectPlayerDie.y = this.sprite.y;
             this.effect.play();
+            this.sprite.rotation = this.degreesToRadians(this.degree);
         }
     }
 
@@ -110,6 +113,7 @@ export class Player extends Container {
                 return;
             }
             if(e.code === "Space") {
+                this.degree += 180;
                 this.jumb();
             }
         })
