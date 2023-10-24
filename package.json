@@ -29,6 +29,7 @@
     "clean-webpack-plugin": "^4.0.0",
     "emitter": "^0.0.5",
     "esbuild-loader": "^2.20.0",
+    "howler": "^2.2.4",
     "pixi.js": "^7.0.4"
   }
 }

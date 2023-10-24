@@ -1,6 +1,7 @@
 import tween, { Tween } from "@tweenjs/tween.js";
 import { Container, Sprite, Texture } from "pixi.js";
 import { Game } from "../../game";
+import { GameConstant } from "../../gameconstant";
 import mapData from "/assets/json/mapData.json";
 
 export class Map extends Container {
@@ -15,7 +16,8 @@ export class Map extends Container {
         this.rectangles = [];
         this.smiles = [];
         this.pillars = [];
-        this.mapVelocity = 7;
+        this.destinations = [];
+        this.mapVelocity = 7.5;
         this._initMap();
     }
 
@@ -75,7 +77,7 @@ export class Map extends Container {
         spike.y = object.y;
         this.spikes.push(spike);
         spike.pivot.set(0.5);
-        sprite.scale.set(1.5,1.5)
+        sprite.scale.set(1.3,1.3);
         spike.rotation = Math.PI/2
         return spike;
     }
@@ -137,6 +139,7 @@ export class Map extends Container {
         recTangLe.x = object.x;
         recTangLe.y = object.y;
         recTangLe.pivot.set(0.5)
+        recTangLe.scale.set(0.8)
         return recTangLe;
     }
 
@@ -159,6 +162,7 @@ export class Map extends Container {
         this.addChild(destination);
         destination.x = object.x;
         destination.y = object.y;
+        this.destinations.push(destination);
         destination.pivot.set(0.5);
         return destination;
     }

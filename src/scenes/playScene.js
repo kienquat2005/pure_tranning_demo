@@ -1,8 +1,13 @@
 import { Container } from "pixi.js";
+import { Effect } from "../effect/effect";
+import { GameConstant } from "../gameconstant";
 import { BackGround } from "../objects/backGround/background";
 import { Map } from "../objects/maps/map";
 import { Player } from "../objects/player/player";
 import { CollideEvents, CollisionDetector } from "../physics/collisionDetector/collisionDetector";
+import { SoundBg } from "../sound/soundBg";
+import { SoundDie } from "../sound/soundDie";
+import { FireworkSound } from "../sound/soundFirework";
 
 export class PlayScene extends Container{
   constructor(){
@@ -10,8 +15,8 @@ export class PlayScene extends Container{
     this._initBackGround();
     this._initMap();
     this._initPlayer();
-    this.isColl = false;
-    this.enable = false;
+    this._initSound();
+    this.win = false
   }
 
   _initBackGround(){
@@ -28,8 +33,13 @@ export class PlayScene extends Container{
   _initPlayer(){
     this.player = new Player();
     this.addChild(this.player);
-    // this.player.x = 300
-    // this.player.y = 525;
+  }
+
+  _initSound(){
+    this.fireworkSound = new FireworkSound();
+    this.soundBg = new SoundBg();
+    this.soundDie = new SoundDie();
+
   }
 
   playerColliderWithSpike(){
@@ -41,6 +51,8 @@ export class PlayScene extends Container{
         this.player.ondie();
         this.map.mapVelocity = 0;
         this.reloadGame();
+        this.soundBg.stop();
+        this.soundDie.play();
       }
     })
   }
@@ -51,7 +63,7 @@ export class PlayScene extends Container{
     if(this.player.sprite.y >= 575) {
       this.player.isFalling = false; 
     } else {
-      this.player.fall();
+      this.player.isFalling = true;
     }
   }
 
@@ -67,11 +79,12 @@ export class PlayScene extends Container{
           this.map.mapVelocity = 0;
           this.player.ondie();
           this.reloadGame();
+          this.soundBg.stop()
+          this.soundDie.play()
         }
       }
     });
 
-    
   }
 
   playerColliderWithSawBlade(){
@@ -83,6 +96,8 @@ export class PlayScene extends Container{
         this.map.mapVelocity = 0;
         this.player.ondie();
         this.reloadGame(); 
+        this.soundBg.stop();
+        this.soundDie.play();
       }
     })
   }
@@ -100,6 +115,8 @@ export class PlayScene extends Container{
           this.map.mapVelocity = 0;
           this.player.ondie();
           this.reloadGame();
+          this.soundBg.stop();
+          this.soundDie.play();
         }
       }
     });
@@ -118,7 +135,25 @@ export class PlayScene extends Container{
           this.map.mapVelocity = 0
           this.player.ondie();
           this.reloadGame();
+          this.soundBg.stop();
+          this.soundDie.play()
         }
+      }
+    })
+  }
+
+  youWin(){
+    if(this.win){
+      return;
+    }
+    this.map.destinations.forEach((destination)=>{
+      if(CollisionDetector.detectCollision(this.player.sprite, destination)){
+        this.player.fireworkEffect.play();
+        this.map.mapVelocity = 1
+        this.reloadGame()
+        this.win = true;
+        this.soundBg.stop();
+        this.fireworkSound.play();
       }
     })
   }
@@ -129,14 +164,15 @@ export class PlayScene extends Container{
     }, 2000);
   }
 
-  update(){
+  update(dt){
     this.map.update();
     this.playerColliderWithPlatform(); 
-    this.playerColliderWithSpike();
+    // this.playerColliderWithSpike();
     this.playerColliderWithSquare();
     this.playerColliderWithSawBlade(); 
     this.playerColliderWithCrusher()
     this.playerColliderWithRectTangle();
+    this.youWin();
     this.player.update();
   }
   

@@ -1,21 +1,23 @@
 import { Container, Sprite, Texture } from "pixi.js";
-import { Effect } from "../../effect/effec";
+import { Effect } from "../../effect/effect";
 import { EffectPlayerDie } from "../../effect/effectPlayerDie";
+import { FireworkEffect } from "../../effect/fireWorkEffect";
+import { GameConstant } from "../../gameconstant";
 
 export class Player extends Container {
     constructor() {
-        super("player");
-        this.jumbVelocity = 1.2;
-        this.gravity = 0.6;
+        super();
+        this.jumbVelocity = GameConstant.JUMP_VELOCIRY;
+        this.gravity = 7.5;
         this.isJumping = false;
         this.isFalling = true;
         this.degree = 0;
-        this.rotationSpeed = 0.18;
+        this.rotationSpeed = 0.2;
         this.isdie = false;
         this._initSprite();
-        this._initEffectPlayer();
-        this._initEffectPlayerDie();
+        this._initEffect();
         this.registerEvents();
+        console.log(GameConstant.PLAYER_GRAVITI)
     }
 
     _initSprite() {
@@ -30,20 +32,25 @@ export class Player extends Container {
 
     }
 
-    _initEffectPlayer(){
-        this.effect = new Effect()
+    _initEffect(){
+        this.effect = new Effect();
         this.addChild(this.effect);
         this.effect.x = this.sprite.x - 25;
         this.effect.y = this.sprite.y
         this.effect.play();
-    }
 
-    _initEffectPlayerDie(){
-        this.effectEffectPlayerDie = new EffectPlayerDie()
+        this.effectEffectPlayerDie = new EffectPlayerDie();
         this.addChild(this.effectEffectPlayerDie);
         this.effectEffectPlayerDie.x = this.sprite.x;
-        this.effectEffectPlayerDie.y = this.sprite.y; 
+        this.effectEffectPlayerDie.y = this.sprite.y;
+
+        this.fireworkEffect = new FireworkEffect();
+        this.fireworkEffect.x = this.sprite.x;
+        this.fireworkEffect.y = this.sprite.y;
+        this.addChild(this.fireworkEffect)
     }
+
+   
 
     ondie(){
         this.isdie = true;
@@ -53,15 +60,18 @@ export class Player extends Container {
     }
 
     jumb(){
-        if(!this.isJumping && !this.isFalling){
-            this.isJumping = true;
-            this.jumbVelocity = 10;
+        if(this.isFalling){
+            return;
         }
+        this.degree += 180;
+        this.isJumping = true;
+        setTimeout(() => {
+            this.isJumping = false;
+            this.isFalling = true;
+        }, 240 )
     }
     fall(){
-        if(!this.isJumping){
             this.isFalling = true; 
-        }
     }
     
     rotation(){
@@ -70,31 +80,26 @@ export class Player extends Container {
     
     updatePlayer(){
         if(this.isJumping){
-            this.sprite.y -= this.jumbVelocity;
-            this.jumbVelocity -= this.gravity;
-            this.effect.x = this.sprite.x - 25;
-            this.effect.y = this.sprite.y;
+            this.sprite.y -= this.jumbVelocity; 
+            // this.effect.x = this.sprite.x - 25;
+            // this.effect.y = this.sprite.y;
             this.effectEffectPlayerDie.x = this.sprite.x;
             this.effectEffectPlayerDie.y = this.sprite.y;
-            this.effect.stop();
             this.rotation();
-            if(this.jumbVelocity <=0){
-                this.isJumping = false;
-                this.isFalling = true;
-
-            }
+            this.effect.stop();
         }
+            else{
+                this.sprite.rotation = this.degreesToRadians(this.degree)
+            }
+    
         if(this.isFalling){
-            this.sprite.y += this.jumbVelocity;
-            this.jumbVelocity += this.gravity;
+            this.sprite.y += this.gravity;
             this.effect.x = this.sprite.x - 25;
             this.effect.y = this.sprite.y
             this.effectEffectPlayerDie.x = this.sprite.x;
             this.effectEffectPlayerDie.y = this.sprite.y;
-            this.sprite.rotation = this.degreesToRadians(this.degree);
             this.effect.play();
         }
-
     }
 
 
@@ -105,7 +110,6 @@ export class Player extends Container {
                 return;
             }
             if(e.code === "Space") {
-                this.degree += 180;
                 this.jumb();
             }
         })

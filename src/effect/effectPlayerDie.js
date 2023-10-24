@@ -1,6 +1,6 @@
 import { Emitter, upgradeConfig } from "@pixi/particle-emitter";
 import { Container, Texture } from "pixi.js";
-import effecPlayerDie from "/assets/json/effectPlayerDie.json"
+import effecPlayerDie from "/assets/particles/effectPlayerDie.json"
 
 export class EffectPlayerDie extends Container{
     constructor(){
